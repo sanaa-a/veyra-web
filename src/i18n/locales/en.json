@@ -1,0 +1,104 @@
+{
+  "nav": { "home": "Home", "services": "Services", "packages": "Packages", "about": "About us", "menu": "Menu", "language": "Language" },
+  "common": {
+    "contact": "Contact us",
+    "getQuote": "Get a quote",
+    "popular": "Most popular",
+    "photoPlaceholder": "Photo placeholder",
+    "waMessage": "Hello Veyra, I would like to know more about your hologram displays.",
+    "waPackage": "Hello Veyra, I would like a quote for the {{name}} package.",
+    "fanLabel": "Animated 3D simulation of a hologram fan drawing the Veyra logo",
+    "copyright": "© {{year}} Veyra. Muscat, Oman."
+  },
+  "cta": { "title": "Ready to make people stop and look?", "body": "Send us a message on WhatsApp and we will reply with ideas and a quote." },
+  "meta": {
+    "home": { "title": "Veyra | Holographic displays in Oman", "description": "Veyra brings 3D holographic displays to events, classrooms and advertising in Oman. We supply the fan, create the content, set it up and run it." },
+    "services": { "title": "Services | Veyra", "description": "Hologram displays for events, exhibitions, classrooms, advertising, product launches and lobbies across Oman." },
+    "packages": { "title": "Packages | Veyra", "description": "Rent a hologram display for your event. Every package includes the fans, custom 3D content and our team on site." },
+    "about": { "title": "About us | Veyra", "description": "Meet the team behind Veyra, the student startup from UTAS bringing holographic displays to Oman." }
+  },
+  "home": {
+    "eyebrow": "Holographic displays · Muscat, Oman",
+    "titleStart": "Make your message",
+    "titleAccent": "float in the air.",
+    "lead": "Veyra brings 3D holographic displays to the places people gather. We supply the hologram fan, create the content, set it up and run it, so your brand, lesson or idea appears to hang in mid-air.",
+    "seeHow": "See how it works",
+    "facts": ["Full HD 3D visuals", "Custom content included", "Setup and support on site"],
+    "fanTag": "Live 3D simulation of a Veyra fan",
+    "how": {
+      "eyebrow": "How it works",
+      "title": "A spinning blade of light that your eyes turn into a picture",
+      "lead": "A Veyra display is a fan with strips of LEDs on its blades. It spins so fast that the blades disappear, and the lights flash in perfect timing to draw an image that seems to float with nothing behind it.",
+      "items": {
+        "spin": { "title": "It spins", "body": "The blades turn hundreds of times a minute, too fast for the eye to follow, so they become invisible." },
+        "light": { "title": "It lights up", "body": "Each LED switches on at the exact moment it passes the right spot, painting the picture point by point." },
+        "see": { "title": "You see 3D", "body": "Your eyes blend the flashes into one bright image. With no screen around it, it looks like it is hanging in the air." }
+      }
+    },
+    "video": { "eyebrow": "See it in action", "title": "This is what a Veyra hologram looks like", "play": "Play video", "placeholder": "The video of the fan in action goes here." },
+    "steps": {
+      "eyebrow": "Working with us",
+      "title": "From idea to hologram in four steps",
+      "items": {
+        "message": { "title": "Message us", "body": "Tell us on WhatsApp what you want to show, where and when." },
+        "design": { "title": "We design it", "body": "Our team turns your logo, product or lesson into 3D hologram content." },
+        "setup": { "title": "We set it up", "body": "We bring the fans, install them and test everything before your audience arrives." },
+        "run": { "title": "People stop and look", "body": "We stay on hand while it runs, then pack everything away when you are done." }
+      }
+    }
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "Holograms wherever you need attention",
+    "lead": "One technology, many uses. Tell us where you want people to look, and we will make it happen.",
+    "items": {
+      "events": { "title": "Events and exhibitions", "body": "Turn your stand or stage into the one everyone walks towards. A floating logo or product draws a crowd from across the hall." },
+      "education": { "title": "Classrooms and education", "body": "Show a beating heart, a DNA strand or the solar system in 3D. Students understand faster when they can see it." },
+      "advertising": { "title": "Advertising and retail", "body": "Put your brand in shop windows, malls and counters. A hologram stops people in a way a poster cannot." },
+      "launches": { "title": "Product launches", "body": "Reveal a new product as a rotating 3D model before anyone holds it, perfect for launches and press days." },
+      "lobbies": { "title": "Lobbies and receptions", "body": "Welcome visitors with your logo or a message floating in your reception, hotel lobby or showroom." },
+      "live": { "title": "Live hologram presence", "body": "Our own technology, born from our engineering project, can stream a real person onto the fan as a live hologram. Ask us about it for speeches, guest appearances and remote presenters." }
+    }
+  },
+  "packages": {
+    "eyebrow": "Packages",
+    "title": "Rent a hologram for your occasion",
+    "lead": "Every package includes the fans, custom 3D content and our team on site. Prices depend on the number of fans, the location and the content, so ask us for a quote.",
+    "note": "Need more fans, a longer period or something different? Message us and we will build a package around you.",
+    "items": {
+      "day": { "name": "One-Day Event", "duration": "1 day · up to 2 fans", "features": ["Hologram fans delivered and installed", "Your logo or product as 3D content", "Technician on site during the event", "Pickup when the event ends"] },
+      "exhibition": { "name": "Exhibition", "duration": "3 days · up to 4 fans", "features": ["Everything in One-Day Event", "Up to 3 pieces of custom 3D content", "Daily check and content changes", "Stand layout advice for the best effect"] },
+      "campaign": { "name": "Custom Campaign", "duration": "Any length · any number of fans", "features": ["Plan built around your goals", "Full 3D content production", "Multiple locations, shops or venues", "Ongoing management and support"] }
+    }
+  },
+  "about": {
+    "eyebrow": "About us",
+    "title": "The people behind Veyra",
+    "who": {
+      "title": "Who we are",
+      "body": [
+        "We are VEYRA, a next-generation communication platform redefining how people connect across distance. By merging physical presence with digital innovation, VEYRA delivers lifelike holographic experiences that make remote interaction feel real, immediate, and human.",
+        "Built on trust, intelligence, and future-forward technology, VEYRA enables seamless connection anytime, anywhere, turning communication into true presence."
+      ]
+    },
+    "badges": ["Best Project 2025–26, UTAS Computer Engineering", "INJAZ Oman 2025/26", "Founded in Muscat, 2025"],
+    "mission": { "title": "Our mission", "body": "To make holographic displays affordable and easy for every business, school and event in Oman. We handle everything from the 3D content to the setup, so our clients can focus on their audience." },
+    "vision": { "title": "Our vision", "body": "Our vision is to develop an economical, portable, and eco-friendly holographic display system that upgrades communication and visualization. We aim to provide environmentally friendly technology that is accessible, customizable, and useful for professional, educational, and daily applications." },
+    "team": {
+      "eyebrow": "Our team",
+      "title": "Engineers, designers and marketers from Oman",
+      "lead": "Veyra started as a final-year engineering project at UTAS. Today it is a team of students building Oman's first hologram display rental service.",
+      "advisors": "Advisors"
+    },
+    "members": {
+      "fatma": { "name": "Fatma Al Sinawi", "role": "Co-founder & CEO", "bio": "Leads Veyra's direction, partnerships and pitches." },
+      "anaum": { "name": "Anaum Sana", "role": "Co-founder, CTO & COO", "bio": "Leads the technology and keeps every installation running smoothly." },
+      "anas": { "name": "Anas Al Riyami", "role": "Chief Financial Officer", "bio": "Manages pricing, budgets and Veyra's finances." },
+      "ibtisam": { "name": "Ibtisam Abdulmomin", "role": "Sales & Graphic Design", "bio": "Designs the Veyra brand and works directly with clients." },
+      "ahmed": { "name": "Ahmed Al Abry", "role": "HR & Marketing", "bio": "Builds the team and spreads the word about Veyra." },
+      "abdulaziz": { "name": "Abdulaziz Aljazmi", "role": "Marketing", "bio": "Runs campaigns and Veyra's social media presence." },
+      "hussain": { "name": "Hussain Albalushi", "role": "Consultant", "bio": "Advises the team on strategy and growth." },
+      "mohammed": { "name": "Mohammed Alsaidi", "role": "Consultant", "bio": "Advises the team on strategy and growth." }
+    }
+  }
+}

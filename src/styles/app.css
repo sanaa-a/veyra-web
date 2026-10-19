@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Veyra is dark-first: the hologram glow only reads on a deep night background. */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: dark;
+  --radius: 1.125rem;
+
+  /* Brand palette from the VEYRA identity guide */
+  --veyra-blue: #7badff;
+  --veyra-violet: #836ffd;
+  --veyra-purple: #9e54fd;
+  --veyra-deep: #5c74e4;
+
+  /* shadcn/ui tokens mapped onto the brand */
+  --background: #0a0a18;
+  --foreground: #eeedff;
+  --card: #13132a;
+  --card-foreground: #eeedff;
+  --popover: #13132a;
+  --popover-foreground: #eeedff;
+  --primary: var(--veyra-violet);
+  --primary-foreground: #0a0a18;
+  --secondary: #1a1a38;
+  --secondary-foreground: #eeedff;
+  --muted: #1a1a38;
+  --muted-foreground: #a9a8cf;
+  --accent: #1a1a38;
+  --accent-foreground: #eeedff;
+  --destructive: #ff6b81;
+  --border: rgb(158 140 255 / 0.18);
+  --input: rgb(158 140 255 / 0.24);
+  --ring: var(--veyra-blue);
+  --whatsapp: #25d366;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-whatsapp: var(--whatsapp);
+  --color-veyra-blue: var(--veyra-blue);
+  --color-veyra-violet: var(--veyra-violet);
+  --color-veyra-purple: var(--veyra-purple);
+  --color-veyra-deep: var(--veyra-deep);
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-display: "Unbounded", "Manrope", system-ui, sans-serif;
+  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-arabic: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+}
+
+@utility bg-veyra-gradient {
+  background-image: linear-gradient(120deg, var(--veyra-blue), var(--veyra-violet) 50%, var(--veyra-purple));
+}
+
+@utility text-veyra-gradient {
+  background-image: linear-gradient(120deg, var(--veyra-blue), var(--veyra-violet) 50%, var(--veyra-purple));
+  background-clip: text;
+  color: transparent;
+}
+
+@utility glow-orb {
+  background: radial-gradient(closest-side, rgb(131 111 253 / 0.25), transparent);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: hidden;
+  }
+  /* Arabic uses one family for everything; the Latin display face has no Arabic glyphs. */
+  [dir="rtl"] body,
+  [dir="rtl"] .font-display {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
