@@ -13,7 +13,7 @@ export const Route = createFileRoute('/{-$locale}/packages')({
 function PackagesPage() {
   const { t } = useTranslation()
   return (
-    <Section>
+    <Section glow="purple">
       <SectionHeading as="h1" eyebrow={t('packages.eyebrow')} title={t('packages.title')} lead={t('packages.lead')} />
       <div className="grid gap-4 md:grid-cols-3">
         {PACKAGES.map(({ id, featured }) => (

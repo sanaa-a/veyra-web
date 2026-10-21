@@ -17,7 +17,7 @@ function AboutPage() {
   const { t } = useTranslation()
   return (
     <>
-      <Section>
+      <Section glow="violet">
         <SectionHeading as="h1" eyebrow={t('about.eyebrow')} title={t('about.title')} />
         <div className="grid items-start gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-14">
           <div className="grid min-w-0 gap-4">
@@ -46,7 +46,7 @@ function AboutPage() {
         </div>
       </Section>
 
-      <Section>
+      <Section glow="blue">
         <SectionHeading eyebrow={t('about.team.eyebrow')} title={t('about.team.title')} lead={t('about.team.lead')} />
         <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {TEAM.map((member) => (

@@ -11,7 +11,7 @@ import { ContactButton } from '@/components/common/contact-button'
 export function SiteFooter() {
   const { t } = useTranslation()
   return (
-    <footer className="border-t pt-8 pb-24 text-sm text-muted-foreground">
+    <footer className="pt-8 pb-24 text-sm text-muted-foreground">
       <Container className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5">
         <PageLink page={SITE_PAGES[0]} aria-label="Veyra">
           <Logo />
@@ -36,12 +36,14 @@ export function SiteFooter() {
 export function CtaBand() {
   const { t } = useTranslation()
   return (
-    <section className="border-t">
+    <section className="relative isolate overflow-hidden bg-[linear-gradient(120deg,#26206b,#5c74e4_38%,#836ffd_68%,#9e54fd)] text-white">
+      {/* The fan's LED strips, as faint diagonal lines over the gradient. */}
+      <div aria-hidden className="absolute inset-0 -z-10 opacity-20 [background-image:repeating-linear-gradient(115deg,transparent_0_38px,rgb(255_255_255/0.35)_38px_39px)]" />
       <Container className="grid gap-10 py-20 sm:py-28 md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] md:items-end">
         <h2 className="font-display text-4xl leading-[1.02] sm:text-6xl">{t('cta.title')}</h2>
         <div className="grid gap-5">
-          <p className="text-muted-foreground">{t('cta.body')}</p>
-          <ContactButton size="lg" className="justify-self-start" />
+          <p className="text-white/80">{t('cta.body')}</p>
+          <ContactButton size="lg" variant="light" className="justify-self-start" />
         </div>
       </Container>
     </section>

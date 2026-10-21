@@ -125,6 +125,116 @@ function perfumeBottle(THREE: Three): Exhibit {
   }
 }
 
-export function createExhibits(THREE: Three): Exhibit[] {
-  return [veyraMark(THREE), perfumeBottle(THREE)]
+/** An Omani dallah in polished brass: a local object people recognise from across the room. */
+function dallah(THREE: Three): Exhibit {
+  const object = new THREE.Group()
+  const brass = new THREE.MeshPhysicalMaterial({ color: 0xc9a25e, metalness: 1, roughness: 0.22, clearcoat: 0.6, envMapIntensity: 1.3 })
+
+  // Wide foot, round belly, pinched waist, then the tall flared lid and its finial.
+  const profile = [
+    [0, -0.52], [0.3, -0.52], [0.32, -0.49], [0.3, -0.45], [0.36, -0.36], [0.38, -0.24], [0.33, -0.1],
+    [0.2, 0.0], [0.15, 0.06], [0.16, 0.12], [0.22, 0.16], [0.2, 0.2], [0.13, 0.3], [0.1, 0.4],
+    [0.12, 0.44], [0.05, 0.47], [0.045, 0.56], [0.07, 0.6], [0.03, 0.66], [0, 0.68],
+  ].map(([x, y]) => new THREE.Vector2(x, y))
+  const body = new THREE.Mesh(new THREE.LatheGeometry(profile, 96), brass)
+
+  // The beak-shaped spout rises from the belly; the handle loops round the other side.
+  const spout = new THREE.Mesh(
+    new THREE.TubeGeometry(
+      new THREE.CubicBezierCurve3(new THREE.Vector3(0.3, -0.18, 0), new THREE.Vector3(0.48, -0.08, 0), new THREE.Vector3(0.44, 0.2, 0), new THREE.Vector3(0.62, 0.38, 0)),
+      48, 0.032, 16,
+    ),
+    brass,
+  )
+  const handle = new THREE.Mesh(
+    new THREE.TubeGeometry(
+      new THREE.CubicBezierCurve3(new THREE.Vector3(-0.14, 0.32, 0), new THREE.Vector3(-0.5, 0.36, 0), new THREE.Vector3(-0.52, -0.16, 0), new THREE.Vector3(-0.34, -0.26, 0)),
+      48, 0.022, 12,
+    ),
+    brass,
+  )
+
+  const pot = new THREE.Group()
+  pot.add(body, spout, handle)
+  pot.scale.setScalar(1.05)
+  object.add(pot)
+
+  return {
+    object,
+    animate(time) {
+      pot.rotation.y = time * 0.6
+      pot.rotation.z = Math.sin(time * 0.5) * 0.05
+    },
+  }
+}
+
+/**
+ * The closing line, as solid lettering. It is drawn with the page's own fonts (so Arabic is shaped properly)
+ * and given depth by stacking the letters slice by slice, darker towards the back.
+ */
+function bookDemo(THREE: Three, text: string): Exhibit {
+  const object = new THREE.Group()
+  const canvas = document.createElement('canvas')
+  canvas.width = 1024
+  canvas.height = 1024
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 4
+
+  // Two stacked lines fill the round fan better than one long one.
+  const words = text.toUpperCase().split(' ')
+  const split = Math.ceil(words.length / 2)
+  const lines = [words.slice(0, split).join(' '), words.slice(split).join(' ')].filter(Boolean)
+
+  const draw = () => {
+    const context = canvas.getContext('2d')
+    if (!context) return
+    const rtl = document.documentElement.dir === 'rtl'
+    context.clearRect(0, 0, canvas.width, canvas.height)
+    context.font = rtl ? '700 230px "IBM Plex Sans Arabic", sans-serif' : '800 230px "Archivo", sans-serif'
+    if ('fontStretch' in context) context.fontStretch = 'expanded'
+    context.direction = rtl ? 'rtl' : 'ltr'
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+    const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height)
+    gradient.addColorStop(0.15, '#7badff')
+    gradient.addColorStop(0.5, '#836ffd')
+    gradient.addColorStop(0.85, '#c48bff')
+    context.fillStyle = gradient
+    const lineHeight = 270
+    lines.forEach((line, i) => {
+      const y = canvas.height / 2 + (i - (lines.length - 1) / 2) * lineHeight
+      context.fillText(line, canvas.width / 2, y, canvas.width * 0.94)
+    })
+    texture.needsUpdate = true
+  }
+  draw()
+  document.fonts?.ready.then(draw)
+
+  const plane = new THREE.PlaneGeometry(1.75, 1.75)
+  const LAYERS = 18
+  const DEPTH = 0.14
+  for (let i = 0; i < LAYERS; i++) {
+    const front = i === LAYERS - 1
+    const shade = front ? 1 : 0.18 + 0.32 * (i / LAYERS)
+    const layer = new THREE.Mesh(
+      plane,
+      new THREE.MeshBasicMaterial({ map: texture, alphaTest: 0.5, color: new THREE.Color(shade, shade, shade), toneMapped: !front, side: THREE.DoubleSide }),
+    )
+    layer.position.z = (i / (LAYERS - 1) - 0.5) * DEPTH
+    object.add(layer)
+  }
+
+  return {
+    object,
+    animate(time) {
+      object.rotation.y = Math.sin(time * 0.7) * 0.32
+      object.rotation.x = Math.sin(time * 0.45) * 0.08
+    },
+  }
+}
+
+/** The show, in order. The last exhibit is the call to action before the loop starts again. */
+export function createExhibits(THREE: Three, { demoText }: { demoText: string }): Exhibit[] {
+  return [veyraMark(THREE), perfumeBottle(THREE), dallah(THREE), bookDemo(THREE, demoText)]
 }

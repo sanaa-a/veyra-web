@@ -97,18 +97,7 @@
         }
       }
     },
-    "fanPhase": {
-      "still": "Fan at rest",
-      "spinning": "Spinning up",
-      "live": "Live · tap to replay"
-    },
-    "scroll": "Scroll",
-    "tags": [
-      "Events",
-      "Classrooms",
-      "Advertising",
-      "Product launches"
-    ]
+    "bookDemo": "Book a demo"
   },
   "services": {
     "eyebrow": "Services",

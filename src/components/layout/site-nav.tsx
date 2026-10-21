@@ -15,7 +15,7 @@ export function SiteNav({ className, linkClassName, onNavigate }: { className?: 
           onClick={onNavigate}
           activeOptions={{ exact: true }}
           className={cn('px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground', linkClassName)}
-          activeProps={{ className: 'text-foreground underline decoration-veyra-violet decoration-2 underline-offset-[10px]', 'aria-current': 'page' }}
+          activeProps={{ className: 'text-foreground underline decoration-veyra-blue decoration-2 underline-offset-[10px]', 'aria-current': 'page' }}
         >
           {t(`nav.${page.key}`)}
         </PageLink>

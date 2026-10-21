@@ -15,20 +15,21 @@ function ServicesPage() {
   const { t } = useTranslation()
   const featured = FEATURED_SERVICE.id
   return (
-    <Section>
+    <Section glow="blue">
       <SectionHeading as="h1" eyebrow={t('services.eyebrow')} title={t('services.title')} lead={t('services.lead')} />
       <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        {SERVICES.map(({ id, icon }) => (
-          <FeatureRow key={id} icon={icon} title={t(`services.items.${id}.title`)} body={t(`services.items.${id}.body`)} />
+        {SERVICES.map(({ id, icon }, index) => (
+          <FeatureRow key={id} index={index} icon={icon} title={t(`services.items.${id}.title`)} body={t(`services.items.${id}.body`)} />
         ))}
       </div>
       <FeatureRow
         icon={FEATURED_SERVICE.icon}
         title={t(`services.items.${featured}.title`)}
         body={t(`services.items.${featured}.body`)}
+        index={1}
         className="mt-16 border-t-veyra-violet md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-8 [&>p]:md:max-w-[60ch]"
       >
-        <ContactButton variant="outline" className="justify-self-start" />
+        <ContactButton className="justify-self-start" />
       </FeatureRow>
     </Section>
   )
