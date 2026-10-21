@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { whatsappUrl } from '@/config/site'
 import { cn } from '@/lib/utils'
 
 /**
@@ -10,7 +11,7 @@ import { cn } from '@/lib/utils'
 export function HologramFan({ className }: { className?: string }) {
   const { t } = useTranslation()
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const demoText = t('home.bookDemo')
+  const [callToAction, setCallToAction] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -22,7 +23,7 @@ export function HologramFan({ className }: { className?: string }) {
     Promise.all([import('three'), import('./fan-scene')])
       .then(([THREE, { mountFan }]) => {
         if (cancelled) return
-        dispose = mountFan(THREE, canvas, { reducedMotion, demoText }).dispose
+        dispose = mountFan(THREE, canvas, { reducedMotion, onCallToAction: setCallToAction }).dispose
       })
       .catch(() => {
         // No WebGL: the stage stays empty and the page still works.
@@ -32,11 +33,25 @@ export function HologramFan({ className }: { className?: string }) {
       cancelled = true
       dispose?.()
     }
-  }, [demoText])
+  }, [])
 
   return (
     <figure className={cn('relative m-0', className)}>
       <canvas ref={canvasRef} role="img" aria-label={t('common.fanLabel')} className="size-full" />
+      {/* The show's last beat: plain white words over the spinning fan, linking to WhatsApp. */}
+      <a
+        href={whatsappUrl(t('common.waMessage'))}
+        target="_blank"
+        rel="noopener noreferrer"
+        tabIndex={callToAction ? 0 : -1}
+        aria-hidden={!callToAction}
+        className={cn(
+          'font-display absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[clamp(1.75rem,7vw,6.5rem)] whitespace-nowrap text-white uppercase transition-opacity duration-700',
+          callToAction ? 'opacity-100' : 'pointer-events-none opacity-0',
+        )}
+      >
+        {t('home.bookDemo')}
+      </a>
     </figure>
   )
 }

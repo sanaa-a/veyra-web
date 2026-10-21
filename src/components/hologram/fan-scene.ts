@@ -7,7 +7,7 @@ type Three = typeof THREE_NS
 
 /**
  * One loop of the show, in seconds: the fan rests, tests its LEDs and spins up; each exhibit plays in turn;
- * then the fan winds down and the camera moves back in, ready to start again.
+ * the page shows its call to action over the spinning fan; then the fan winds down and the camera moves back in.
  */
 const TIMELINE = {
   ledTest: [0.7, 1.05],
@@ -15,6 +15,7 @@ const TIMELINE = {
   spinUp: 2.4,
   exhibitSeconds: 6,
   switchFlicker: 0.4,
+  callToAction: 4.5,
   windDown: 2.6,
 } as const
 const LIVE_AT = TIMELINE.spinStart + TIMELINE.spinUp * 0.7
@@ -34,10 +35,10 @@ const smoothstep = (a: number, b: number, x: number) => {
 /** A stable, jittery on/off pattern, like LEDs hunting for sync. */
 const flicker = (t: number, density: number) => Math.sin(t * 97.3) * Math.sin(t * 41.9 + 1.7) > 1 - 2 * density
 
-type MountOptions = { reducedMotion: boolean; demoText: string }
+type MountOptions = { reducedMotion: boolean; onCallToAction?: (showing: boolean) => void }
 
 /** Mounts the looping hologram show into a canvas. Returns a cleanup function. */
-export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotion, demoText }: MountOptions) {
+export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotion, onCallToAction }: MountOptions) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   // Transparent, so the page's own violet-black shows behind the fan.
@@ -67,7 +68,7 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
   scene.add(fan.group)
 
   const stage = new THREE.Group()
-  const exhibits = createExhibits(THREE, { demoText })
+  const exhibits = createExhibits(THREE)
   exhibits.forEach((exhibit) => {
     exhibit.object.visible = false
     stage.add(exhibit.object)
@@ -104,8 +105,10 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
   const startedAt = clock()
   let lastFrame = startedAt
   let angle = 0
-  const windDownAt = LIVE_AT + exhibits.length * TIMELINE.exhibitSeconds
+  const callToActionAt = LIVE_AT + exhibits.length * TIMELINE.exhibitSeconds
+  const windDownAt = callToActionAt + TIMELINE.callToAction
   const loopSeconds = windDownAt + TIMELINE.windDown
+  let callToActionShowing = false
 
   const render = () => {
     const now = clock()
@@ -127,7 +130,7 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
     const liveSince = t - LIVE_AT
     let showing = -1
     let on = false
-    if (liveSince >= 0 && t < windDownAt) {
+    if (liveSince >= 0 && t < callToActionAt) {
       showing = Math.floor(liveSince / TIMELINE.exhibitSeconds)
       const intoExhibit = liveSince % TIMELINE.exhibitSeconds
       on = intoExhibit > TIMELINE.switchFlicker || flicker(now, intoExhibit / TIMELINE.switchFlicker)
@@ -136,6 +139,9 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
       exhibit.object.visible = i === showing && on
       if (i === showing) exhibit.animate(reducedMotion ? 0.6 : now)
     })
+
+    const callToAction = !reducedMotion && t >= callToActionAt && t < windDownAt
+    if (callToAction !== callToActionShowing) onCallToAction?.((callToActionShowing = callToAction))
 
     const pullBack = smoothstep(0, TIMELINE.spinStart + TIMELINE.spinUp, t) * (1 - smoothstep(windDownAt, loopSeconds, t))
     camera.position.lerpVectors(closePosition, wide, pullBack)

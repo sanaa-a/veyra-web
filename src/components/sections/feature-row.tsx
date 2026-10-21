@@ -28,7 +28,7 @@ export function FeatureRow({ icon: Icon, title, body, index = 0, className, chil
       <span className={cn('grid size-11 place-items-center rounded-sm border transition-colors', TONES[tone])}>
         <Icon className="size-5" strokeWidth={1.5} aria-hidden />
       </span>
-      <h3 className="text-xl font-semibold">{title}</h3>
+      <h3 className="text-2xl font-semibold">{title}</h3>
       <p className="max-w-[46ch] text-muted-foreground">{body}</p>
       {children}
     </article>

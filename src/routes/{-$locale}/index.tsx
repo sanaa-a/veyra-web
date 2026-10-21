@@ -63,7 +63,7 @@ function HomePage() {
           {STEPS.map((id, index) => (
             <li key={id} className="grid min-w-0 content-start gap-3 border-t pt-6">
               <span className="text-gradient font-display text-5xl">{String(index + 1).padStart(2, '0')}</span>
-              <h3 className="text-xl font-semibold">{t(`home.steps.items.${id}.title`)}</h3>
+              <h3 className="text-2xl font-semibold">{t(`home.steps.items.${id}.title`)}</h3>
               <p className="text-muted-foreground">{t(`home.steps.items.${id}.body`)}</p>
             </li>
           ))}
