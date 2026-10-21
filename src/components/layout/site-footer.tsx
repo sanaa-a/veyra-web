@@ -11,7 +11,7 @@ import { ContactButton } from '@/components/common/contact-button'
 export function SiteFooter() {
   const { t } = useTranslation()
   return (
-    <footer className="pt-10 pb-28 text-sm text-muted-foreground">
+    <footer className="border-t pt-8 pb-24 text-sm text-muted-foreground">
       <Container className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5">
         <PageLink page={SITE_PAGES[0]} aria-label="Veyra">
           <Logo />
@@ -36,15 +36,15 @@ export function SiteFooter() {
 export function CtaBand() {
   const { t } = useTranslation()
   return (
-    <div className="border-y bg-[linear-gradient(120deg,rgb(123_173_255/0.14),rgb(158_84_253/0.2))]">
-      <Container className="flex flex-wrap items-center justify-between gap-6 py-12">
-        <div className="grid min-w-0 gap-2">
-          <h2 className="font-display text-2xl font-bold sm:text-3xl">{t('cta.title')}</h2>
+    <section className="border-t">
+      <Container className="grid gap-10 py-20 sm:py-28 md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] md:items-end">
+        <h2 className="font-display text-4xl leading-[1.02] sm:text-6xl">{t('cta.title')}</h2>
+        <div className="grid gap-5">
           <p className="text-muted-foreground">{t('cta.body')}</p>
+          <ContactButton size="lg" className="justify-self-start" />
         </div>
-        <ContactButton size="lg" />
       </Container>
-    </div>
+    </section>
   )
 }
 
@@ -55,7 +55,7 @@ export function WhatsAppFab() {
       variant="whatsapp"
       size="icon"
       label={null}
-      className="fixed end-[calc(1.1rem+env(safe-area-inset-right))] bottom-[calc(1.1rem+env(safe-area-inset-bottom))] z-40 size-14 [&_svg:not([class*='size-'])]:size-7"
+      className="fixed end-[calc(1rem+env(safe-area-inset-right))] bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 size-13 rounded-full shadow-lg shadow-black/50 [&_svg:not([class*='size-'])]:size-6"
     />
   )
 }

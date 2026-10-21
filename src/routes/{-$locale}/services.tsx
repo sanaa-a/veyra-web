@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { ContactButton } from '@/components/common/contact-button'
-import { FeatureCard } from '@/components/sections/feature-card'
+import { FeatureRow } from '@/components/sections/feature-row'
 import { Section, SectionHeading } from '@/components/sections/section'
 import { FEATURED_SERVICE, SERVICES } from '@/content/services'
 import { pageHead } from '@/lib/seo'
@@ -17,20 +17,19 @@ function ServicesPage() {
   return (
     <Section>
       <SectionHeading as="h1" eyebrow={t('services.eyebrow')} title={t('services.title')} lead={t('services.lead')} />
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map(({ id, icon }) => (
-          <FeatureCard key={id} tone="solid" icon={icon} title={t(`services.items.${id}.title`)} body={t(`services.items.${id}.body`)} />
+          <FeatureRow key={id} icon={icon} title={t(`services.items.${id}.title`)} body={t(`services.items.${id}.body`)} />
         ))}
-        <FeatureCard
-          tone="solid"
-          icon={FEATURED_SERVICE.icon}
-          title={t(`services.items.${featured}.title`)}
-          body={t(`services.items.${featured}.body`)}
-          className="bg-[linear-gradient(120deg,rgb(123_173_255/0.1),rgb(158_84_253/0.14))] sm:col-span-2 lg:col-span-1"
-        >
-          <ContactButton variant="outline" className="mt-auto self-start" />
-        </FeatureCard>
       </div>
+      <FeatureRow
+        icon={FEATURED_SERVICE.icon}
+        title={t(`services.items.${featured}.title`)}
+        body={t(`services.items.${featured}.body`)}
+        className="mt-16 border-t-veyra-violet md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-8 [&>p]:md:max-w-[60ch]"
+      >
+        <ContactButton variant="outline" className="justify-self-start" />
+      </FeatureRow>
     </Section>
   )
 }

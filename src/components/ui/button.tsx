@@ -4,20 +4,19 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-bold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring/60 focus-visible:ring-[3px]",
+  "inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-sm text-sm font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       variant: {
-        default:
-          'bg-veyra-gradient text-primary-foreground shadow-[0_6px_28px_-8px_rgb(131_111_253/0.7)] hover:-translate-y-0.5 hover:shadow-[0_10px_34px_-8px_rgb(131_111_253/0.9)]',
-        outline: 'border border-border bg-transparent text-foreground hover:border-primary hover:bg-secondary/40',
-        ghost: 'text-muted-foreground hover:bg-secondary hover:text-foreground',
-        whatsapp: 'bg-whatsapp text-white shadow-[0_10px_30px_-6px_rgb(37_211_102/0.6)] hover:scale-105',
+        default: 'bg-primary text-primary-foreground hover:bg-veyra-violet hover:text-white',
+        outline: 'border border-input bg-transparent text-foreground hover:border-foreground',
+        ghost: 'text-muted-foreground hover:text-foreground',
+        whatsapp: 'bg-whatsapp text-black hover:bg-white',
       },
       size: {
-        default: 'h-10 px-5 py-2',
-        sm: 'h-9 px-4',
-        lg: 'h-12 px-6 text-base',
+        default: 'h-11 px-5',
+        sm: 'h-9 px-3.5',
+        lg: 'h-13 px-7 text-base',
         icon: 'size-10',
       },
     },

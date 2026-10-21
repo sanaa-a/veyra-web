@@ -4,35 +4,37 @@
 /* Veyra is dark-first: the hologram glow only reads on a deep night background. */
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Veyra is dark by nature: a hologram only exists against black.
+ * The palette is a near-black void, warm-white type and hairlines; the brand violet is kept for light itself.
+ */
 :root {
   color-scheme: dark;
-  --radius: 1.125rem;
+  --radius: 2px;
 
-  /* Brand palette from the VEYRA identity guide */
   --veyra-blue: #7badff;
   --veyra-violet: #836ffd;
   --veyra-purple: #9e54fd;
   --veyra-deep: #5c74e4;
 
-  /* shadcn/ui tokens mapped onto the brand */
-  --background: #0a0a18;
-  --foreground: #eeedff;
-  --card: #13132a;
-  --card-foreground: #eeedff;
-  --popover: #13132a;
-  --popover-foreground: #eeedff;
-  --primary: var(--veyra-violet);
-  --primary-foreground: #0a0a18;
-  --secondary: #1a1a38;
-  --secondary-foreground: #eeedff;
-  --muted: #1a1a38;
-  --muted-foreground: #a9a8cf;
-  --accent: #1a1a38;
-  --accent-foreground: #eeedff;
+  --background: #060607;
+  --foreground: #ecebe7;
+  --card: #0e0e10;
+  --card-foreground: #ecebe7;
+  --popover: #111114;
+  --popover-foreground: #ecebe7;
+  --primary: #ecebe7;
+  --primary-foreground: #060607;
+  --secondary: #17171a;
+  --secondary-foreground: #ecebe7;
+  --muted: #17171a;
+  --muted-foreground: #8d8c88;
+  --accent: #1c1c20;
+  --accent-foreground: #ecebe7;
   --destructive: #ff6b81;
-  --border: rgb(158 140 255 / 0.18);
-  --input: rgb(158 140 255 / 0.24);
-  --ring: var(--veyra-blue);
+  --border: rgb(236 235 231 / 0.12);
+  --input: rgb(236 235 231 / 0.2);
+  --ring: var(--veyra-violet);
   --whatsapp: #25d366;
 }
 
@@ -61,28 +63,33 @@
   --color-veyra-purple: var(--veyra-purple);
   --color-veyra-deep: var(--veyra-deep);
 
-  --radius-sm: calc(var(--radius) - 8px);
-  --radius-md: calc(var(--radius) - 4px);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) * 2);
 
-  --font-display: "Unbounded", "Manrope", system-ui, sans-serif;
-  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
   --font-arabic: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
 }
 
-@utility bg-veyra-gradient {
-  background-image: linear-gradient(120deg, var(--veyra-blue), var(--veyra-violet) 50%, var(--veyra-purple));
+/* Wide, heavy Archivo for headlines: reads like the stencilled type on hardware. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 760;
+  letter-spacing: -0.02em;
 }
 
-@utility text-veyra-gradient {
-  background-image: linear-gradient(120deg, var(--veyra-blue), var(--veyra-violet) 50%, var(--veyra-purple));
-  background-clip: text;
-  color: transparent;
-}
-
-@utility glow-orb {
-  background: radial-gradient(closest-side, rgb(131 111 253 / 0.25), transparent);
+/* Small uppercase mono captions, the voice of spec sheets and device labels. */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
 @layer base {
@@ -98,9 +105,14 @@
   }
   /* Arabic uses one family for everything; the Latin display face has no Arabic glyphs. */
   [dir="rtl"] body,
-  [dir="rtl"] .font-display {
+  [dir="rtl"] .font-display,
+  [dir="rtl"] .label-mono {
     font-family: var(--font-arabic);
+    font-stretch: normal;
     letter-spacing: 0;
+  }
+  [dir="rtl"] .label-mono {
+    font-size: 0.8125rem;
   }
   h1, h2, h3 {
     text-wrap: balance;

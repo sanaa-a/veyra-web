@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ArrowDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
 import { ContactButton } from '@/components/common/contact-button'
 import { Container } from '@/components/common/container'
 import { HologramFan } from '@/components/hologram/hologram-fan'
-import { FeatureCard } from '@/components/sections/feature-card'
-import { Eyebrow, Section, SectionHeading } from '@/components/sections/section'
+import { FeatureRow } from '@/components/sections/feature-row'
+import { Section, SectionHeading } from '@/components/sections/section'
 import { VideoDialog } from '@/components/sections/video-dialog'
 import { HOW_IT_WORKS, STEPS } from '@/content/home'
 import { pageHead } from '@/lib/seo'
@@ -19,40 +19,36 @@ function HomePage() {
   const { t } = useTranslation()
   return (
     <>
-      <section className="relative overflow-hidden py-10 sm:py-16 lg:py-20">
-        <div className="glow-orb pointer-events-none absolute inset-x-[-20%] -bottom-1/3 h-3/4" aria-hidden />
-        <Container className="relative grid items-center gap-8 md:grid-cols-[1.05fr_1fr] lg:gap-16">
-          <div className="grid min-w-0 gap-6">
-            <Eyebrow>{t('home.eyebrow')}</Eyebrow>
-            <h1 className="font-display text-4xl leading-[1.08] font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              {t('home.titleStart')} <span className="text-veyra-gradient">{t('home.titleAccent')}</span>
+      {/* The hero fills the first screen: the fan is the whole story until the visitor scrolls. */}
+      <section className="relative isolate flex min-h-[calc(100svh-3.75rem)] flex-col overflow-hidden bg-black">
+        <div className="absolute inset-0 -z-10 grid place-items-start justify-items-center md:place-items-center md:justify-items-end md:pe-[3vw]">
+          <HologramFan className="w-[min(100vw,62svh)] md:w-[min(64vw,calc(100svh-3.75rem))]" />
+        </div>
+        <Container className="mt-auto grid gap-8 pb-8 sm:pb-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div className="grid max-w-xl gap-4">
+            <span className="label-mono">{t('home.eyebrow')}</span>
+            <h1 className="font-display text-4xl leading-[0.98] sm:text-6xl">
+              {t('home.titleStart')} <span className="text-veyra-violet">{t('home.titleAccent')}</span>
             </h1>
-            <p className="max-w-[56ch] text-lg text-muted-foreground">{t('home.lead')}</p>
-            <div className="flex flex-wrap gap-3">
-              <ContactButton size="lg" />
-              <Button variant="outline" size="lg" asChild>
-                <a href="#how">{t('home.seeHow')}</a>
-              </Button>
-            </div>
-            <ul className="flex flex-wrap gap-x-6 gap-y-2.5 text-sm text-muted-foreground">
-              {t('home.facts', { returnObjects: true }).map((fact) => (
-                <li key={fact} className="flex items-center gap-2 before:size-1.5 before:rounded-full before:bg-veyra-gradient">
-                  {fact}
-                </li>
-              ))}
-            </ul>
           </div>
-          <HologramFan className="max-md:order-first max-md:max-w-[400px]" />
+          <div className="flex items-center gap-5">
+            <ContactButton size="lg" />
+            <a href="#how" className="label-mono inline-flex items-center gap-2 transition-colors hover:text-foreground">
+              {t('home.scroll')}
+              <ArrowDown className="size-3.5" aria-hidden />
+            </a>
+          </div>
         </Container>
       </section>
 
-      <Section id="how" className="scroll-mt-20 border-t">
+      <Section id="how" className="scroll-mt-16">
         <SectionHeading eyebrow={t('home.how.eyebrow')} title={t('home.how.title')} lead={t('home.how.lead')} />
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-3 md:gap-8">
           {HOW_IT_WORKS.map(({ id, icon }) => (
-            <FeatureCard key={id} icon={icon} title={t(`home.how.items.${id}.title`)} body={t(`home.how.items.${id}.body`)} />
+            <FeatureRow key={id} icon={icon} title={t(`home.how.items.${id}.title`)} body={t(`home.how.items.${id}.body`)} />
           ))}
         </div>
+        <p className="mt-14 max-w-[60ch] text-lg text-muted-foreground">{t('home.lead')}</p>
       </Section>
 
       <Section>
@@ -62,12 +58,12 @@ function HomePage() {
 
       <Section>
         <SectionHeading eyebrow={t('home.steps.eyebrow')} title={t('home.steps.title')} />
-        <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((id, index) => (
-            <li key={id} className="grid min-w-0 content-start gap-2 border-t pt-5">
-              <span className="font-display text-sm font-bold text-veyra-violet">{String(index + 1).padStart(2, '0')}</span>
-              <h3 className="font-display text-lg font-medium">{t(`home.steps.items.${id}.title`)}</h3>
-              <p className="text-sm text-muted-foreground">{t(`home.steps.items.${id}.body`)}</p>
+            <li key={id} className="grid min-w-0 content-start gap-3 border-t pt-6">
+              <span className="font-mono text-sm text-veyra-violet">{String(index + 1).padStart(2, '0')}</span>
+              <h3 className="text-xl font-semibold">{t(`home.steps.items.${id}.title`)}</h3>
+              <p className="text-muted-foreground">{t(`home.steps.items.${id}.body`)}</p>
             </li>
           ))}
         </ol>

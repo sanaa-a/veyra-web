@@ -12,13 +12,13 @@ export function VideoDialog() {
   const { t } = useTranslation()
   return (
     <Dialog>
-      <DialogTrigger className="group relative grid aspect-video w-full max-w-full place-items-center overflow-hidden rounded-xl border bg-card bg-[radial-gradient(60%_80%_at_30%_30%,rgb(123_173_255/0.18),transparent_60%),radial-gradient(60%_80%_at_75%_70%,rgb(158_84_253/0.22),transparent_60%)] text-center outline-none focus-visible:ring-[3px] focus-visible:ring-ring/60">
-        <span className="grid gap-3.5 px-4">
-          <span className="mx-auto grid size-20 place-items-center rounded-full bg-veyra-gradient text-primary-foreground shadow-[0_0_0_10px_rgb(131_111_253/0.14),0_0_0_22px_rgb(131_111_253/0.06)] transition-transform group-hover:scale-110">
-            <Play className="size-7 fill-current ms-1 rtl:-scale-x-100" aria-hidden />
+      <DialogTrigger className="group relative grid aspect-video w-full max-w-full place-items-center overflow-hidden border bg-black text-center outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        {!VIDEO_SRC && <span className="label-mono absolute start-4 top-4">{t('home.video.placeholder')}</span>}
+        <span className="flex items-center gap-4">
+          <span className="grid size-16 place-items-center rounded-full border border-foreground/40 transition-colors group-hover:border-veyra-violet group-hover:bg-veyra-violet">
+            <Play className="ms-1 size-5 fill-current rtl:-scale-x-100" aria-hidden />
           </span>
-          <span className="font-medium">{t('home.video.play')}</span>
-          {!VIDEO_SRC && <span className="text-sm text-muted-foreground">{t('home.video.placeholder')}</span>}
+          <span className="text-lg font-semibold">{t('home.video.play')}</span>
         </span>
       </DialogTrigger>
       <DialogContent>

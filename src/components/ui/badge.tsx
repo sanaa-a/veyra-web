@@ -3,18 +3,15 @@ import { Slot } from 'radix-ui'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
-const badgeVariants = cva(
-  'inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1 [&>svg]:size-3 [&>svg]:pointer-events-none',
-  {
-    variants: {
-      variant: {
-        default: 'border-transparent bg-secondary text-veyra-blue',
-        outline: 'border-border bg-card text-foreground',
-      },
+const badgeVariants = cva('inline-flex w-fit shrink-0 items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono text-[11px] tracking-[0.12em] uppercase rtl:font-sans rtl:text-xs rtl:tracking-normal', {
+  variants: {
+    variant: {
+      default: 'border-veyra-violet/50 text-veyra-violet',
+      outline: 'border-border text-muted-foreground',
     },
-    defaultVariants: { variant: 'default' },
   },
-)
+  defaultVariants: { variant: 'default' },
+})
 
 function Badge({
   className,

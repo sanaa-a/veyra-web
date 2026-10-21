@@ -16,7 +16,7 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" aria-label={t('nav.language')}>
+        <Button variant="ghost" size="sm" aria-label={t('nav.language')}>
           <Languages aria-hidden />
           <span lang={current === 'en' ? 'ar' : 'en'}>{LANGUAGE_NAMES[current === 'en' ? 'ar' : 'en']}</span>
         </Button>

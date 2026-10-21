@@ -19,7 +19,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-[env(safe-area-inset-top)] z-40 border-b bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-[env(safe-area-inset-top)] z-40 border-b bg-background/85 backdrop-blur-md">
       <Container className="flex items-center gap-3 py-3 md:gap-5">
         <PageLink page={SITE_PAGES[0]} aria-label="Veyra">
           <Logo />
@@ -27,10 +27,10 @@ export function SiteHeader() {
         <SiteNav className="ms-auto hidden gap-1 md:flex" />
         <div className="ms-auto flex items-center gap-2 md:ms-0">
           <LanguageSwitcher />
-          <ContactButton className="hidden sm:inline-flex" />
+          <ContactButton size="sm" className="hidden sm:inline-flex" />
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden" aria-label={t('nav.menu')}>
+              <Button variant="outline" size="icon" className="size-9 md:hidden" aria-label={t('nav.menu')}>
                 <Menu />
               </Button>
             </SheetTrigger>
@@ -38,7 +38,7 @@ export function SiteHeader() {
               <SheetTitle>
                 <Logo />
               </SheetTitle>
-              <SiteNav className="mt-4 grid gap-1" linkClassName="px-4 py-3 text-lg" onNavigate={() => setMenuOpen(false)} />
+              <SiteNav className="mt-4 grid gap-1" linkClassName="border-b px-0 py-4 font-display text-2xl text-foreground" onNavigate={() => setMenuOpen(false)} />
               <ContactButton size="lg" className="mt-auto" />
             </SheetContent>
           </Sheet>

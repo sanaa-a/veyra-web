@@ -1,125 +1,64 @@
 import type * as THREE_NS from 'three'
-import { logoPartAt } from './logo-shape'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { createFan } from './fan-model'
+import { createExhibits } from './exhibits'
 
 type Three = typeof THREE_NS
 
-const BLADES = 4
-const RINGS = 60
-const BLADE_SPEED = 7 // radians per second, slowed down so the eye can follow the sweep
-const BRAND = { blue: 0x7badff, violet: 0x836ffd, purple: 0x9e54fd, white: 0xeeedff }
+export type FanPhase = 'still' | 'spinning' | 'live'
 
-const vertexShader = /* glsl */ `
-  uniform float uAngle;
-  uniform float uSize;
-  uniform float uStatic;
-  attribute float aTheta;
-  attribute vec3 aColor;
-  varying vec3 vColor;
-  varying float vBright;
-  const float TAU = 6.28318530718;
-  void main() {
-    // Each LED is brightest just after a blade passes it, then fades: persistence of vision.
-    float sector = TAU / ${BLADES}.0;
-    float since = mod(uAngle - aTheta, sector) / sector;
-    vBright = mix(0.62 + 0.6 * exp(-since * 6.0), 0.95, uStatic);
-    vColor = aColor;
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = uSize * (3.0 / -mv.z);
-    gl_Position = projectionMatrix * mv;
-  }
-`
+/** The show, in seconds from start: the fan rests, tests its LEDs, spins up, and the image locks in. */
+const TIMELINE = {
+  ledTest: [0.7, 1.05],
+  spinStart: 1.4,
+  spinUp: 2.4,
+  exhibitSeconds: 7,
+  switchFlicker: 0.4,
+} as const
+const MAX_SPEED = 42 // radians per second on screen
 
-const fragmentShader = /* glsl */ `
-  varying vec3 vColor;
-  varying float vBright;
-  void main() {
-    float d = length(gl_PointCoord - 0.5);
-    float a = smoothstep(0.5, 0.1, d);
-    gl_FragColor = vec4(vColor * vBright, a * vBright);
-  }
-`
-
-/** Samples the logo on the polar grid of LEDs a real fan would have. */
-function buildLeds(THREE: Three) {
-  const positions: number[] = []
-  const colors: number[] = []
-  const thetas: number[] = []
-  const blue = new THREE.Color(BRAND.blue)
-  const violet = new THREE.Color(BRAND.violet)
-  const purple = new THREE.Color(BRAND.purple)
-  const white = new THREE.Color(BRAND.white)
-  const color = new THREE.Color()
-
-  for (let ring = 3; ring <= RINGS; ring++) {
-    const r = ring / RINGS
-    const steps = Math.round(300 * r)
-    for (let s = 0; s < steps; s++) {
-      const theta = (s / steps) * Math.PI * 2
-      const x = r * Math.cos(theta)
-      const y = r * Math.sin(theta)
-      const part = logoPartAt(x, y)
-      if (!part) continue
-      const u = (x + 1) / 2
-      if (part === 'dot') color.copy(white)
-      else if (u < 0.5) color.copy(blue).lerp(violet, u * 2)
-      else color.copy(violet).lerp(purple, (u - 0.5) * 2)
-      positions.push(x, y, part === 'ring' ? 0.04 : 0)
-      // The shader writes colors straight to the screen, so keep them in sRGB.
-      color.convertLinearToSRGB()
-      colors.push(color.r, color.g, color.b)
-      thetas.push(theta)
-    }
-  }
-
-  const geometry = new THREE.BufferGeometry()
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
-  geometry.setAttribute('aColor', new THREE.Float32BufferAttribute(colors, 3))
-  geometry.setAttribute('aTheta', new THREE.Float32BufferAttribute(thetas, 1))
-  return geometry
+const smoothstep = (a: number, b: number, x: number) => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
+  return t * t * (3 - 2 * t)
 }
 
-function buildBlades(THREE: Three) {
-  const points: number[] = []
-  for (let b = 0; b < BLADES; b++) {
-    const a = (b / BLADES) * Math.PI * 2
-    points.push(0, 0, -0.01, Math.cos(a), Math.sin(a), -0.01)
-  }
-  const geometry = new THREE.BufferGeometry()
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3))
-  return new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({ color: 0xa9a8cf, transparent: true, opacity: 0.12 }))
-}
+/** A stable, jittery on/off pattern, like LEDs hunting for sync. */
+const flicker = (t: number, density: number) => Math.sin(t * 97.3) * Math.sin(t * 41.9 + 1.7) > 1 - 2 * density
 
-function buildRim(THREE: Three) {
-  const curve = new THREE.EllipseCurve(0, 0, 1.04, 1.04)
-  const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(128))
-  return new THREE.LineLoop(geometry, new THREE.LineBasicMaterial({ color: BRAND.violet, transparent: true, opacity: 0.25 }))
-}
+type MountOptions = { reducedMotion: boolean; onPhase?: (phase: FanPhase) => void }
 
-/** Mounts the hologram fan into a canvas. Returns a cleanup function. */
-export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotion }: { reducedMotion: boolean }) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+/** Mounts the hologram fan into a canvas. Returns controls for replaying the show and a cleanup function. */
+export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotion, onPhase }: MountOptions) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setClearColor(0x000000, 1)
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.05
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 20)
-  camera.position.set(0, 0, 3.6)
+  const pmrem = new THREE.PMREMGenerator(renderer)
+  const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+  scene.environment = environment
 
-  const fan = new THREE.Group()
-  scene.add(fan)
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50)
+  camera.position.set(0, 0, 4.3)
 
-  const material = new THREE.ShaderMaterial({
-    uniforms: { uAngle: { value: 0 }, uSize: { value: 6 }, uStatic: { value: reducedMotion ? 1 : 0 } },
-    vertexShader,
-    fragmentShader,
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
+  const key = new THREE.DirectionalLight(0xffffff, 1.6)
+  key.position.set(-2, 2.5, 3)
+  const rim = new THREE.DirectionalLight(0x9e8cff, 1.2)
+  rim.position.set(2.5, -1, -1)
+  scene.add(key, rim, new THREE.AmbientLight(0xffffff, 0.15))
+
+  const fan = createFan(THREE)
+  scene.add(fan.group)
+
+  const stage = new THREE.Group()
+  const exhibits = createExhibits(THREE)
+  exhibits.forEach((exhibit) => {
+    exhibit.object.visible = false
+    stage.add(exhibit.object)
   })
-  const leds = new THREE.Points(buildLeds(THREE), material)
-  const blades = buildBlades(THREE)
-  const rim = buildRim(THREE)
-  const hub = new THREE.Mesh(new THREE.CircleGeometry(0.035, 24), new THREE.MeshBasicMaterial({ color: 0xa9a8cf, transparent: true, opacity: 0.4 }))
-  fan.add(leds, blades, rim, hub)
+  scene.add(stage)
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = canvas
@@ -127,45 +66,88 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
     renderer.setSize(w, h, false)
     camera.aspect = w / h
     camera.updateProjectionMatrix()
-    material.uniforms.uSize.value = Math.max(3.5, (w / 520) * 6) * renderer.getPixelRatio()
   }
   const resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(canvas)
   resize()
 
+  // The hologram leans gently towards the pointer.
+  const pointer = new THREE.Vector2()
+  const onPointerMove = (event: PointerEvent) => {
+    const rect = canvas.getBoundingClientRect()
+    pointer.set(((event.clientX - rect.left) / rect.width) * 2 - 1, ((event.clientY - rect.top) / rect.height) * 2 - 1)
+  }
+  window.addEventListener('pointermove', onPointerMove, { passive: true })
+
   let visible = true
   const intersectionObserver = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting))
   intersectionObserver.observe(canvas)
 
-  const timer = new THREE.Timer()
+  const clock = () => performance.now() / 1000
+  let startedAt = clock()
+  let lastFrame = startedAt
+  let angle = 0
+  let lastPhase: FanPhase | null = null
+  const setPhase = (phase: FanPhase) => {
+    if (phase !== lastPhase) onPhase?.((lastPhase = phase))
+  }
+
   const render = () => {
-    timer.update()
-    const t = timer.getElapsed()
-    if (!reducedMotion) {
-      material.uniforms.uAngle.value = t * BLADE_SPEED
-      blades.rotation.z = t * BLADE_SPEED
-      // The whole fan turns gently so the floating image reads as 3D.
-      fan.rotation.y = Math.sin(t * 0.5) * 0.55
-      fan.rotation.x = Math.sin(t * 0.35) * 0.12
-      fan.position.y = Math.sin(t * 0.8) * 0.03
+    const now = clock()
+    const dt = Math.min(now - lastFrame, 0.05)
+    lastFrame = now
+    const t = reducedMotion ? 1e3 : now - startedAt
+
+    // Blade speed ramps up with an ease-in, like a motor taking load.
+    const spin = smoothstep(TIMELINE.spinStart, TIMELINE.spinStart + TIMELINE.spinUp, t)
+    angle -= spin * spin * MAX_SPEED * dt
+    const ledTest = t > TIMELINE.ledTest[0] && t < TIMELINE.ledTest[1] ? 1 : 0
+    fan.update({ angle, opacity: 1 - smoothstep(0.3, 0.8, spin), leds: Math.max(ledTest, spin * 0.6) })
+
+    // Which exhibit is showing, and whether it is flickering in.
+    const liveSince = t - (TIMELINE.spinStart + TIMELINE.spinUp * 0.7)
+    let showing = -1
+    let on = false
+    if (liveSince >= 0) {
+      showing = Math.floor(liveSince / TIMELINE.exhibitSeconds) % exhibits.length
+      const intoExhibit = liveSince % TIMELINE.exhibitSeconds
+      on = intoExhibit > TIMELINE.switchFlicker || flicker(now, intoExhibit / TIMELINE.switchFlicker)
     }
+    exhibits.forEach((exhibit, i) => {
+      exhibit.object.visible = i === showing && on
+      if (i === showing) exhibit.animate(reducedMotion ? 0.6 : now)
+    })
+
+    stage.rotation.y += (pointer.x * 0.35 - stage.rotation.y) * 0.05
+    stage.rotation.x += (pointer.y * 0.2 - stage.rotation.x) * 0.05
+
+    setPhase(spin === 0 ? 'still' : liveSince < TIMELINE.switchFlicker ? 'spinning' : 'live')
     renderer.render(scene, camera)
   }
 
-  if (reducedMotion) render()
-  else renderer.setAnimationLoop(() => visible && render())
+  const replay = () => {
+    startedAt = clock()
+  }
 
-  return () => {
-    renderer.setAnimationLoop(null)
-    resizeObserver.disconnect()
-    intersectionObserver.disconnect()
-    scene.traverse((object) => {
-      const mesh = object as THREE_NS.Mesh
-      mesh.geometry?.dispose()
-      const mat = mesh.material as THREE_NS.Material | undefined
-      mat?.dispose()
-    })
-    timer.dispose()
-    renderer.dispose()
+  if (reducedMotion) render()
+  else renderer.setAnimationLoop(() => visible && !document.hidden && render())
+
+  return {
+    replay,
+    dispose() {
+      renderer.setAnimationLoop(null)
+      resizeObserver.disconnect()
+      intersectionObserver.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      scene.traverse((object) => {
+        const mesh = object as THREE_NS.Mesh
+        mesh.geometry?.dispose()
+        const material = mesh.material as THREE_NS.Material | THREE_NS.Material[] | undefined
+        ;(Array.isArray(material) ? material : material ? [material] : []).forEach((m) => m.dispose())
+      })
+      environment.dispose()
+      pmrem.dispose()
+      renderer.dispose()
+    },
   }
 }

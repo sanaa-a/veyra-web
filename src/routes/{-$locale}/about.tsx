@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardDescription } from '@/components/ui/card'
 import { MemberCard } from '@/components/sections/member-card'
 import { Eyebrow, Section, SectionHeading } from '@/components/sections/section'
 import { ADVISORS, TEAM } from '@/content/team'
@@ -22,7 +21,7 @@ function AboutPage() {
         <SectionHeading as="h1" eyebrow={t('about.eyebrow')} title={t('about.title')} />
         <div className="grid items-start gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-14">
           <div className="grid min-w-0 gap-4">
-            <h2 className="font-display text-2xl font-bold">{t('about.who.title')}</h2>
+            <h2 className="text-2xl font-semibold">{t('about.who.title')}</h2>
             {t('about.who.body', { returnObjects: true }).map((paragraph) => (
               <p key={paragraph} className="max-w-[62ch] text-lg text-muted-foreground">
                 {paragraph}
@@ -30,18 +29,18 @@ function AboutPage() {
             ))}
             <div className="mt-2 flex flex-wrap gap-2.5">
               {t('about.badges', { returnObjects: true }).map((badge) => (
-                <Badge key={badge} variant="outline" className="py-2 text-sm whitespace-normal">
+                <Badge key={badge} variant="outline" className="whitespace-normal">
                   {badge}
                 </Badge>
               ))}
             </div>
           </div>
-          <div className="grid min-w-0 gap-5">
+          <div className="grid min-w-0 gap-8">
             {STATEMENTS.map((key) => (
-              <Card key={key} className="gap-2.5">
+              <div key={key} className="grid gap-3 border-t pt-5">
                 <Eyebrow>{t(`about.${key}.title`)}</Eyebrow>
-                <CardDescription>{t(`about.${key}.body`)}</CardDescription>
-              </Card>
+                <p className="text-lg">{t(`about.${key}.body`)}</p>
+              </div>
             ))}
           </div>
         </div>
@@ -49,13 +48,13 @@ function AboutPage() {
 
       <Section>
         <SectionHeading eyebrow={t('about.team.eyebrow')} title={t('about.team.title')} lead={t('about.team.lead')} />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {TEAM.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}
         </div>
-        <h3 className="mt-12 mb-5 font-display text-xl font-medium">{t('about.team.advisors')}</h3>
-        <div className="grid gap-5 md:grid-cols-2">
+        <h3 className="label-mono mt-20 mb-6 border-t pt-6">{t('about.team.advisors')}</h3>
+        <div className="grid gap-8 md:grid-cols-2">
           {ADVISORS.map((member) => (
             <MemberCard key={member.id} member={member} compact />
           ))}
