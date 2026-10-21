@@ -14,8 +14,7 @@
     "photoPlaceholder": "Photo placeholder",
     "waMessage": "Hello Veyra, I would like to know more about your hologram displays.",
     "waPackage": "Hello Veyra, I would like a quote for the {{name}} package.",
-    "fanLabel": "Animated 3D simulation of a hologram fan drawing the Veyra logo",
-    "copyright": "© {{year}} Veyra. Muscat, Oman."
+    "fanLabel": "Animated 3D simulation of a hologram fan drawing the Veyra logo"
   },
   "cta": {
     "title": "Ready to make people stop and look?",
@@ -239,5 +238,13 @@
         "bio": "Advises the team on strategy and growth."
       }
     }
+  },
+  "footer": {
+    "pages": "Pages",
+    "services": "Services",
+    "demoTitle": "Book a demo",
+    "demoBody": "See a Veyra fan in person. Message us on WhatsApp and we will set up a time.",
+    "whatsapp": "Chat on WhatsApp",
+    "follow": "Follow Veyra on {{network}}"
   }
 }

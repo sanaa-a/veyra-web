@@ -5,6 +5,7 @@ export const SITE = {
   whatsapp: '96800000000',
   email: 'vey.ra@outlook.com',
   instagram: 'veyra_om',
+  linkedin: 'https://www.linkedin.com/company/veyra-hologram',
 } as const
 
 export function whatsappUrl(message: string) {
