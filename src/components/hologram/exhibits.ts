@@ -125,45 +125,69 @@ function perfumeBottle(THREE: Three): Exhibit {
   }
 }
 
-/** An Omani dallah in polished brass: a local object people recognise from across the room. */
-function dallah(THREE: Three): Exhibit {
+/**
+ * A DNA double helix for the classroom: two glossy backbones twisting round each other,
+ * joined by base pairs that alternate between the brand blues and violets.
+ */
+function dnaHelix(THREE: Three): Exhibit {
   const object = new THREE.Group()
-  const brass = new THREE.MeshPhysicalMaterial({ color: 0xc9a25e, metalness: 1, roughness: 0.22, clearcoat: 0.6, envMapIntensity: 1.3 })
+  const helix = new THREE.Group()
 
-  // Wide foot, round belly, pinched waist, then the tall flared lid and its finial.
-  const profile = [
-    [0, -0.52], [0.3, -0.52], [0.32, -0.49], [0.3, -0.45], [0.36, -0.36], [0.38, -0.24], [0.33, -0.1],
-    [0.2, 0.0], [0.15, 0.06], [0.16, 0.12], [0.22, 0.16], [0.2, 0.2], [0.13, 0.3], [0.1, 0.4],
-    [0.12, 0.44], [0.05, 0.47], [0.045, 0.56], [0.07, 0.6], [0.03, 0.66], [0, 0.68],
-  ].map(([x, y]) => new THREE.Vector2(x, y))
-  const body = new THREE.Mesh(new THREE.LatheGeometry(profile, 96), brass)
+  const HEIGHT = 1.5
+  const RADIUS = 0.3
+  const TURNS = 2
+  const PAIRS = 22
+  const angleAt = (y: number) => ((y + HEIGHT / 2) / HEIGHT) * TURNS * Math.PI * 2
 
-  // The beak-shaped spout rises from the belly; the handle loops round the other side.
-  const spout = new THREE.Mesh(
-    new THREE.TubeGeometry(
-      new THREE.CubicBezierCurve3(new THREE.Vector3(0.3, -0.18, 0), new THREE.Vector3(0.48, -0.08, 0), new THREE.Vector3(0.44, 0.2, 0), new THREE.Vector3(0.62, 0.38, 0)),
-      48, 0.032, 16,
-    ),
-    brass,
-  )
-  const handle = new THREE.Mesh(
-    new THREE.TubeGeometry(
-      new THREE.CubicBezierCurve3(new THREE.Vector3(-0.14, 0.32, 0), new THREE.Vector3(-0.5, 0.36, 0), new THREE.Vector3(-0.52, -0.16, 0), new THREE.Vector3(-0.34, -0.26, 0)),
-      48, 0.022, 12,
-    ),
-    brass,
+  // The two backbones are the same curve, half a turn apart.
+  const strandCurve = (offset: number) =>
+    new THREE.CatmullRomCurve3(
+      Array.from({ length: 80 }, (_, i) => {
+        const y = -HEIGHT / 2 + (i / 79) * HEIGHT
+        const a = angleAt(y) + offset
+        return new THREE.Vector3(Math.cos(a) * RADIUS, y, Math.sin(a) * RADIUS)
+      }),
+    )
+  const strandMaterial = (color: number) =>
+    new THREE.MeshPhysicalMaterial({ color, metalness: 0.1, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.08, emissive: color, emissiveIntensity: 0.06, envMapIntensity: 0.7 })
+  helix.add(
+    new THREE.Mesh(new THREE.TubeGeometry(strandCurve(0), 240, 0.035, 16), strandMaterial(0x5c74e4)),
+    new THREE.Mesh(new THREE.TubeGeometry(strandCurve(Math.PI), 240, 0.035, 16), strandMaterial(PURPLE)),
   )
 
-  const pot = new THREE.Group()
-  pot.add(body, spout, handle)
-  pot.scale.setScalar(1.05)
-  object.add(pot)
+  // Each rung is two half-bars of different colours meeting in the middle, with a bead where it joins each backbone.
+  const PAIR_COLOURS = [BLUE, VIOLET, PURPLE, 0x5c74e4]
+  const halfBar = new THREE.CylinderGeometry(0.016, 0.016, RADIUS, 12)
+  halfBar.translate(0, RADIUS / 2, 0)
+  halfBar.rotateZ(-Math.PI / 2)
+  const bead = new THREE.SphereGeometry(0.045, 20, 20)
+  const pairMaterials = PAIR_COLOURS.map(
+    (color) => new THREE.MeshPhysicalMaterial({ color, roughness: 0.25, clearcoat: 1, emissive: color, emissiveIntensity: 0.12, envMapIntensity: 0.7 }),
+  )
+  for (let i = 0; i < PAIRS; i++) {
+    const y = -HEIGHT / 2 + ((i + 0.5) / PAIRS) * HEIGHT
+    const a = angleAt(y)
+    const rung = new THREE.Group()
+    rung.position.y = y
+    rung.rotation.y = -a
+    const left = new THREE.Mesh(halfBar, pairMaterials[i % 4])
+    const right = new THREE.Mesh(halfBar, pairMaterials[(i + 2) % 4])
+    right.rotation.y = Math.PI
+    const beadA = new THREE.Mesh(bead, pairMaterials[i % 4])
+    beadA.position.x = RADIUS
+    const beadB = new THREE.Mesh(bead, pairMaterials[(i + 2) % 4])
+    beadB.position.x = -RADIUS
+    rung.add(left, right, beadA, beadB)
+    helix.add(rung)
+  }
+
+  helix.rotation.z = 0.35
+  object.add(helix)
 
   return {
     object,
     animate(time) {
-      pot.rotation.y = time * 0.6
-      pot.rotation.z = Math.sin(time * 0.5) * 0.05
+      helix.rotation.y = time * 0.8
     },
   }
 }
@@ -236,5 +260,5 @@ function bookDemo(THREE: Three, text: string): Exhibit {
 
 /** The show, in order. The last exhibit is the call to action before the loop starts again. */
 export function createExhibits(THREE: Three, { demoText }: { demoText: string }): Exhibit[] {
-  return [veyraMark(THREE), perfumeBottle(THREE), dallah(THREE), bookDemo(THREE, demoText)]
+  return [veyraMark(THREE), perfumeBottle(THREE), dnaHelix(THREE), bookDemo(THREE, demoText)]
 }
