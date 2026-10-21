@@ -38,16 +38,38 @@ export function HologramFan({ className }: { className?: string }) {
     }
   }, [])
 
+  const tags = t('home.tags', { returnObjects: true })
+
   return (
-    <figure className={cn('relative m-0 aspect-square w-full', className)}>
+    <figure className={cn('relative m-0', className)}>
       <canvas
         ref={canvasRef}
         role="img"
         aria-label={t('common.fanLabel')}
         onClick={() => replayRef.current()}
-        className="size-full cursor-pointer [mask-image:radial-gradient(circle_at_center,#000_43%,transparent_45.5%)]"
+        className="size-full cursor-pointer"
       />
-      <figcaption className="pointer-events-none absolute inset-x-0 top-[3%] flex justify-center font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+      {/* What Veyra is used for, set around the hologram once it is live. */}
+      <ul
+        className={cn(
+          'pointer-events-none absolute inset-0 m-0 hidden list-none p-0 transition-opacity duration-1000 md:block',
+          phase === 'live' ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        {tags.map((tag, i) => (
+          <li
+            key={tag}
+            className={cn(
+              'label-mono absolute tracking-[0.3em]',
+              i < 2 ? 'top-[28%]' : 'top-[62%]',
+              i % 2 === 0 ? 'start-[14%]' : 'end-[14%]',
+            )}
+          >
+            {tag}
+          </li>
+        ))}
+      </ul>
+      <figcaption className="pointer-events-none absolute inset-x-0 top-[calc(3.75rem+1.25rem)] flex justify-center font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
         <span className="flex items-center gap-2">
           <span className={cn('size-1.5 rounded-full bg-muted-foreground', phase === 'live' && 'bg-veyra-violet', phase === 'spinning' && 'animate-pulse bg-foreground')} />
           {phase ? t(`home.fanPhase.${phase}`) : t('home.fanPhase.still')}

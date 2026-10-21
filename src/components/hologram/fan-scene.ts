@@ -1,6 +1,6 @@
 import type * as THREE_NS from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
-import { createFan } from './fan-model'
+import { createFan, FAN_RADIUS } from './fan-model'
 import { createExhibits } from './exhibits'
 
 type Three = typeof THREE_NS
@@ -17,6 +17,10 @@ const TIMELINE = {
 } as const
 const MAX_SPEED = 42 // radians per second on screen
 
+/** The camera opens on a close-up of the hub and a blade, then pulls back as the fan spins up. */
+const CLOSE_UP = { position: [0.62, -0.4, 0.8], target: [0.32, 0.04, 0] } as const
+const FAN_FILL = 0.92 // share of the screen's shorter side the fan covers once the camera settles
+
 const smoothstep = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
   return t * t * (3 - 2 * t)
@@ -29,9 +33,10 @@ type MountOptions = { reducedMotion: boolean; onPhase?: (phase: FanPhase) => voi
 
 /** Mounts the hologram fan into a canvas. Returns controls for replaying the show and a cleanup function. */
 export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotion, onPhase }: MountOptions) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  renderer.setClearColor(0x000000, 1)
+  // Transparent, so the page's own violet-black shows behind the fan.
+  renderer.setClearColor(0x000000, 0)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.toneMappingExposure = 1.05
 
@@ -40,8 +45,12 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
   const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
   scene.environment = environment
 
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50)
-  camera.position.set(0, 0, 4.3)
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 50)
+  const closePosition = new THREE.Vector3(...CLOSE_UP.position)
+  const closeTarget = new THREE.Vector3(...CLOSE_UP.target)
+  const wide = new THREE.Vector3()
+  const target = new THREE.Vector3()
+  const origin = new THREE.Vector3()
 
   const key = new THREE.DirectionalLight(0xffffff, 1.6)
   key.position.set(-2, 2.5, 3)
@@ -66,6 +75,9 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
     renderer.setSize(w, h, false)
     camera.aspect = w / h
     camera.updateProjectionMatrix()
+    // Back off far enough that the fan covers FAN_FILL of the shorter side of the screen.
+    const visiblePerUnit = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(1, camera.aspect)
+    wide.set(0, 0, (2 * FAN_RADIUS) / (visiblePerUnit * FAN_FILL))
   }
   const resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(canvas)
@@ -117,6 +129,10 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
       exhibit.object.visible = i === showing && on
       if (i === showing) exhibit.animate(reducedMotion ? 0.6 : now)
     })
+
+    const pullBack = smoothstep(0, TIMELINE.spinStart + TIMELINE.spinUp, t)
+    camera.position.lerpVectors(closePosition, wide, pullBack)
+    camera.lookAt(target.lerpVectors(closeTarget, origin, pullBack))
 
     stage.rotation.y += (pointer.x * 0.35 - stage.rotation.y) * 0.05
     stage.rotation.x += (pointer.y * 0.2 - stage.rotation.x) * 0.05

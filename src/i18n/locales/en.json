@@ -102,7 +102,13 @@
       "spinning": "Spinning up",
       "live": "Live · tap to replay"
     },
-    "scroll": "Scroll"
+    "scroll": "Scroll",
+    "tags": [
+      "Events",
+      "Classrooms",
+      "Advertising",
+      "Product launches"
+    ]
   },
   "services": {
     "eyebrow": "Services",

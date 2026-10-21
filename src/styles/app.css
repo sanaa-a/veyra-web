@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Veyra is dark by nature: a hologram only exists against black.
- * The palette is a near-black void, warm-white type and hairlines; the brand violet is kept for light itself.
+ * Veyra is dark by nature: a hologram only reads against the dark.
+ * The palette is a violet-tinted black, warm-white type and hairlines; the brand violet is kept for light itself.
  */
 :root {
   color-scheme: dark;
@@ -17,19 +17,19 @@
   --veyra-purple: #9e54fd;
   --veyra-deep: #5c74e4;
 
-  --background: #060607;
+  --background: #0b0812;
   --foreground: #ecebe7;
-  --card: #0e0e10;
+  --card: #130f1d;
   --card-foreground: #ecebe7;
-  --popover: #111114;
+  --popover: #161121;
   --popover-foreground: #ecebe7;
   --primary: #ecebe7;
-  --primary-foreground: #060607;
-  --secondary: #17171a;
+  --primary-foreground: #0b0812;
+  --secondary: #1a1526;
   --secondary-foreground: #ecebe7;
-  --muted: #17171a;
+  --muted: #1a1526;
   --muted-foreground: #8d8c88;
-  --accent: #1c1c20;
+  --accent: #221b31;
   --accent-foreground: #ecebe7;
   --destructive: #ff6b81;
   --border: rgb(236 235 231 / 0.12);

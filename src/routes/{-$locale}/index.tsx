@@ -6,7 +6,6 @@ import { Container } from '@/components/common/container'
 import { HologramFan } from '@/components/hologram/hologram-fan'
 import { FeatureRow } from '@/components/sections/feature-row'
 import { Section, SectionHeading } from '@/components/sections/section'
-import { VideoDialog } from '@/components/sections/video-dialog'
 import { HOW_IT_WORKS, STEPS } from '@/content/home'
 import { pageHead } from '@/lib/seo'
 
@@ -19,11 +18,10 @@ function HomePage() {
   const { t } = useTranslation()
   return (
     <>
-      {/* The hero fills the first screen: the fan is the whole story until the visitor scrolls. */}
-      <section className="relative isolate flex min-h-[calc(100svh-3.75rem)] flex-col overflow-hidden bg-black">
-        <div className="absolute inset-0 -z-10 grid place-items-start justify-items-center md:place-items-center md:justify-items-end md:pe-[3vw]">
-          <HologramFan className="w-[min(100vw,62svh)] md:w-[min(64vw,calc(100svh-3.75rem))]" />
-        </div>
+      {/* The hero fills the whole first screen, running up under the header: the fan is the whole story until the visitor scrolls. */}
+      <section className="relative isolate -mt-[3.75rem] flex min-h-svh flex-col overflow-hidden bg-[radial-gradient(ellipse_at_center,#1c1230_0%,var(--background)_70%)]">
+        <HologramFan className="absolute inset-0 -z-10" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-background/90 to-transparent" />
         <Container className="mt-auto grid gap-8 pb-8 sm:pb-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div className="grid max-w-xl gap-4">
             <span className="label-mono">{t('home.eyebrow')}</span>
@@ -51,10 +49,6 @@ function HomePage() {
         <p className="mt-14 max-w-[60ch] text-lg text-muted-foreground">{t('home.lead')}</p>
       </Section>
 
-      <Section>
-        <SectionHeading eyebrow={t('home.video.eyebrow')} title={t('home.video.title')} />
-        <VideoDialog />
-      </Section>
 
       <Section>
         <SectionHeading eyebrow={t('home.steps.eyebrow')} title={t('home.steps.title')} />
