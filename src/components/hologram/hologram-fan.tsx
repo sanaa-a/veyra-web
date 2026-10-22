@@ -46,8 +46,8 @@ export function HologramFan({ className }: { className?: string }) {
         tabIndex={callToAction ? 0 : -1}
         aria-hidden={!callToAction}
         className={cn(
-          'font-display absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[clamp(1.75rem,7vw,6.5rem)] whitespace-nowrap text-white uppercase transition-opacity duration-700',
-          callToAction ? 'opacity-100' : 'pointer-events-none opacity-0',
+          'font-display absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[clamp(1.75rem,7vw,6.5rem)] whitespace-nowrap text-white uppercase',
+          callToAction ? 'animate-[flicker_2.6s_linear_infinite]' : 'pointer-events-none opacity-0',
         )}
       >
         {t('home.bookDemo')}

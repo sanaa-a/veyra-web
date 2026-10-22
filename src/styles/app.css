@@ -40,6 +40,13 @@
   --veyra-gradient: linear-gradient(100deg, var(--veyra-blue), var(--veyra-violet) 50%, var(--veyra-purple));
 }
 
+/* A neon sign coming on: a few stutters, then steady, with the odd flick while it stays lit. */
+@keyframes flicker {
+  0%, 4%, 8%, 13% { opacity: 0.15; }
+  2%, 6%, 10%, 16%, 60%, 63%, 100% { opacity: 1; }
+  61.5% { opacity: 0.35; }
+}
+
 @keyframes ticker {
   to {
     transform: translateX(-50%);

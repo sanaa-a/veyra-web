@@ -75,7 +75,7 @@ function veyraMark(THREE: Three): Exhibit {
 
 /**
  * A DNA double helix in the style of a science-magazine render: two glossy blue backbones with a fine,
- * grainy surface, joined by slim rungs, spinning on its long axis. Two fainter helices sit further back for depth.
+ * grainy surface, joined by slim rungs, spinning on its long axis. A fainter helix sits further back for depth.
  */
 function dnaHelix(THREE: Three): Exhibit {
   const object = new THREE.Group()
@@ -148,7 +148,6 @@ function dnaHelix(THREE: Three): Exhibit {
   main.rotation.z = 0.62
   const back = [
     { helix: buildHelix(0.22, 2.6, 0.22), position: [-0.6, 0.25, -1.4], tilt: 0.3 },
-    { helix: buildHelix(0.15, 2.6, 0.2), position: [0.7, -0.3, -2], tilt: 0.9 },
   ]
   back.forEach(({ helix, position, tilt }) => {
     helix.position.set(position[0], position[1], position[2])
