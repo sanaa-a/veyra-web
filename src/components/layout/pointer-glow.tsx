@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 
 /**
  * A soft purple light that follows the pointer across the page.
- * Mouse and trackpad only; touch screens and reduced motion get nothing.
+ * Mouse and trackpad only; touch screens and reduced motion get nothing. It hides over anything marked data-no-glow (the hero show).
  */
 export function PointerGlow() {
   const glowRef = useRef<HTMLDivElement>(null)
@@ -16,9 +16,11 @@ export function PointerGlow() {
     let frame = 0
     const onMove = (event: PointerEvent) => {
       cancelAnimationFrame(frame)
+      const hidden = event.target instanceof Element && event.target.closest('[data-no-glow]') !== null
       frame = requestAnimationFrame(() => {
+        glow.style.opacity = hidden ? '0' : '1'
+        if (hidden) return
         glow.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`
-        glow.style.opacity = '1'
       })
     }
     const onLeave = () => {
@@ -37,7 +39,7 @@ export function PointerGlow() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
       <div
         ref={glowRef}
-        className="absolute -top-[18rem] -left-[18rem] size-[36rem] rounded-full opacity-0 mix-blend-screen transition-opacity duration-500"
+        className="absolute -top-[9rem] -left-[9rem] size-[18rem] rounded-full opacity-0 mix-blend-screen transition-opacity duration-500"
         style={{ background: 'radial-gradient(circle, rgb(158 84 253 / 0.32) 0%, rgb(131 111 253 / 0.14) 35%, transparent 70%)' }}
       />
     </div>

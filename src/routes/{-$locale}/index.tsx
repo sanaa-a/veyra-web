@@ -21,7 +21,7 @@ function HomePage() {
   return (
     <>
       {/* The first screen is the show alone, running up under the header; the words start below it. */}
-      <section className="relative isolate -mt-[3.75rem] h-svh min-h-[30rem] overflow-hidden bg-[radial-gradient(ellipse_at_center,#1c1230_0%,var(--background)_70%)]">
+      <section data-no-glow className="relative isolate -mt-[3.75rem] h-svh min-h-[30rem] overflow-hidden bg-[radial-gradient(ellipse_at_center,#1c1230_0%,var(--background)_70%)]">
         <HologramFan className="absolute inset-0" />
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
       </section>
