@@ -32,7 +32,7 @@
     },
     "packages": {
       "title": "Packages | Veyra",
-      "description": "Rent a hologram display for your event. Every package includes the fans, custom 3D content and our team on site."
+      "description": "Rent a hologram display for your event. Every package includes the hologram display, custom 3D content and our team on site."
     },
     "about": {
       "title": "About us | Veyra",
@@ -88,7 +88,7 @@
         },
         "setup": {
           "title": "We set it up",
-          "body": "We bring the fans, install them and test everything before your audience arrives."
+          "body": "We bring the display, install it and test everything before your audience arrives."
         },
         "run": {
           "title": "People stop and look",
@@ -159,14 +159,14 @@
   "packages": {
     "eyebrow": "Packages",
     "title": "Rent a hologram for your occasion",
-    "lead": "Every package includes the fans, custom 3D content and our team on site. Prices depend on the number of fans, the location and the content, so ask us for a quote.",
-    "note": "Need more fans, a longer period or something different? Message us and we will build a package around you.",
+    "lead": "Every package includes the hologram display, custom 3D content and our team on site. Prices depend on the length, the location and the content, so ask us for a quote.",
+    "note": "Need a longer period or something different? Message us and we will build a package around you.",
     "items": {
       "day": {
         "name": "One-Day Event",
-        "duration": "1 day, up to 2 fans",
+        "duration": "1 day",
         "features": [
-          "Hologram fans delivered and installed",
+          "Hologram display delivered and installed",
           "Your logo or product as 3D content",
           "Technician on site during the event",
           "Pickup when the event ends"
@@ -174,7 +174,7 @@
       },
       "exhibition": {
         "name": "Exhibition",
-        "duration": "3 days, up to 4 fans",
+        "duration": "3 days",
         "features": [
           "Everything in One-Day Event",
           "Up to 3 pieces of custom 3D content",
@@ -184,7 +184,7 @@
       },
       "campaign": {
         "name": "Custom Campaign",
-        "duration": "Any length, any number of fans",
+        "duration": "Any length",
         "features": [
           "Plan built around your goals",
           "Full 3D content production",
