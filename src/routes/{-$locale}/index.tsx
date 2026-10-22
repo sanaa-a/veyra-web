@@ -29,22 +29,22 @@ function HomePage() {
       <UsesTicker />
 
       <section className="glow-violet relative">
-        <Container className="grid gap-10 py-16 sm:py-24 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:items-end md:gap-14">
-          <h1 data-reveal className="font-display text-5xl leading-[1.02] sm:text-7xl">
+        <Container className="grid justify-items-center gap-8 py-20 text-center sm:py-28">
+          <h1 data-reveal className="font-display text-5xl leading-[1.02] sm:text-7xl lg:text-8xl">
             {t('home.titleStart')} <span className="text-veyra-blue">{t('home.titleAccent')}</span>
           </h1>
-          <div data-reveal style={{ '--reveal-delay': '120ms' } as CSSProperties} className="grid gap-6">
-            <p className="text-lg text-muted-foreground">{t('home.lead')}</p>
-            <ul className="grid gap-2.5">
-              {t('home.facts', { returnObjects: true }).map((fact) => (
-                <li key={fact} className="flex items-center gap-3">
-                  <Check className="size-4.5 shrink-0 text-veyra-blue" aria-hidden />
-                  {fact}
-                </li>
-              ))}
-            </ul>
-            <ContactButton size="lg" className="justify-self-start" />
-          </div>
+          <p data-reveal className="max-w-2xl text-lg text-muted-foreground sm:text-xl">
+            {t('home.lead')}
+          </p>
+          <ul data-reveal className="flex flex-wrap justify-center gap-x-8 gap-y-3">
+            {t('home.facts', { returnObjects: true }).map((fact) => (
+              <li key={fact} className="flex items-center gap-2.5">
+                <Check className="size-4.5 shrink-0 text-veyra-blue" aria-hidden />
+                {fact}
+              </li>
+            ))}
+          </ul>
+          <ContactButton data-reveal size="lg" />
         </Container>
       </section>
 

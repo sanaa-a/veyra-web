@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Mail } from 'lucide-react'
+import { Mail, MessageCircle } from 'lucide-react'
 import { InstagramIcon, LinkedInIcon, WhatsAppIcon } from '@/components/common/brand-icons'
 import { useTranslation } from 'react-i18next'
 import { Container } from '@/components/common/container'
@@ -116,15 +116,17 @@ export function CtaBand() {
   )
 }
 
-/** The floating WhatsApp button: a labelled pill on wider screens, the round icon on phones. */
+/** The floating contact button: a labelled pill on wider screens, a round chat icon on phones. */
 export function WhatsAppFab() {
   const { t } = useTranslation()
   return (
     <ContactButton
       size="lg"
-      label={<span className="hidden sm:inline">{t('common.whatsapp')}</span>}
-      aria-label={t('common.whatsapp')}
-      className="fixed end-[calc(1rem+env(safe-area-inset-right))] bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 size-14 px-0 sm:w-auto sm:px-6 [&_svg:not([class*='size-'])]:size-6"
-    />
+      label={<span className="hidden sm:inline">{t('common.contact')}</span>}
+      aria-label={t('common.contact')}
+      className="fixed end-[calc(1rem+env(safe-area-inset-right))] bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 size-14 px-0 sm:w-auto sm:px-6 [&_svg:not([class*='size-'])]:size-5.5"
+    >
+      <MessageCircle aria-hidden />
+    </ContactButton>
   )
 }

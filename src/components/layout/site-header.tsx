@@ -27,7 +27,7 @@ export function SiteHeader() {
         <SiteNav className="ms-auto hidden gap-1 md:flex" />
         <div className="ms-auto flex items-center gap-2 md:ms-0">
           <LanguageSwitcher />
-          <ContactButton size="sm" label={t('common.whatsappShort')} className="hidden sm:inline-flex" />
+          <ContactButton size="sm" className="hidden sm:inline-flex" />
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="size-9 md:hidden" aria-label={t('nav.menu')}>

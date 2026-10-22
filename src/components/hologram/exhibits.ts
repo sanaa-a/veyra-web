@@ -74,34 +74,94 @@ function veyraMark(THREE: Three): Exhibit {
 }
 
 /**
- * A concept car (a public-domain model, optimised for the Khronos glTF samples by Eric Chadwick, CC BY 4.0),
- * turning slowly like a car on a showroom turntable. It loads in the background; the slot stays dark until it arrives.
+ * A DNA double helix in the style of a science-magazine render: two glossy blue backbones with a fine,
+ * grainy surface, joined by slim rungs, spinning on its long axis. Two fainter helices sit further back for depth.
  */
-function conceptCar(THREE: Three): Exhibit {
+function dnaHelix(THREE: Three): Exhibit {
   const object = new THREE.Group()
-  const turntable = new THREE.Group()
-  turntable.rotation.x = 0.32 // seen from a little above, as people look at a car on a stand
-  object.add(turntable)
 
-  Promise.all([import('three/examples/jsm/loaders/GLTFLoader.js'), import('three/examples/jsm/libs/meshopt_decoder.module.js')])
-    .then(([{ GLTFLoader }, { MeshoptDecoder }]) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('/models/concept-car.glb'))
-    .then(({ scene: car }) => {
-      const box = new THREE.Box3().setFromObject(car)
-      const size = box.getSize(new THREE.Vector3())
-      car.position.sub(box.getCenter(new THREE.Vector3()))
-      const fit = new THREE.Group()
-      fit.add(car)
-      fit.scale.setScalar(1.9 / Math.max(size.x, size.z))
-      turntable.add(fit)
+  // A grainy bump texture, so the surface catches light like a real rendered model instead of smooth plastic.
+  const grainCanvas = document.createElement('canvas')
+  grainCanvas.width = grainCanvas.height = 128
+  const grainContext = grainCanvas.getContext('2d')
+  if (grainContext) {
+    const pixels = grainContext.createImageData(128, 128)
+    for (let i = 0; i < pixels.data.length; i += 4) {
+      const v = 110 + Math.random() * 145
+      pixels.data.set([v, v, v, 255], i)
+    }
+    grainContext.putImageData(pixels, 0, 0)
+  }
+  const grain = new THREE.CanvasTexture(grainCanvas)
+  grain.wrapS = grain.wrapT = THREE.RepeatWrapping
+  grain.repeat.set(40, 2)
+
+  const material = (opacity: number) =>
+    new THREE.MeshPhysicalMaterial({
+      color: 0x2466c8,
+      emissive: 0x06205a,
+      emissiveIntensity: 0.5,
+      roughness: 0.32,
+      metalness: 0.05,
+      clearcoat: 1,
+      clearcoatRoughness: 0.2,
+      bumpMap: grain,
+      bumpScale: 0.6,
+      envMapIntensity: 0.9,
+      transparent: opacity < 1,
+      opacity,
+      depthWrite: opacity === 1,
     })
-    .catch(() => {
-      // Without the model the show simply skips to the next exhibit's light.
-    })
+
+  const buildHelix = (opacity: number, length: number, radius: number) => {
+    const helix = new THREE.Group()
+    const TURNS = 1.6
+    const angleAt = (y: number) => (y / length + 0.5) * TURNS * Math.PI * 2
+    const strand = (offset: number) =>
+      new THREE.CatmullRomCurve3(
+        Array.from({ length: 90 }, (_, i) => {
+          const y = -length / 2 + (i / 89) * length
+          const a = angleAt(y) + offset
+          return new THREE.Vector3(Math.cos(a) * radius, y, Math.sin(a) * radius)
+        }),
+      )
+    const surface = material(opacity)
+    helix.add(
+      new THREE.Mesh(new THREE.TubeGeometry(strand(0), 260, radius * 0.17, 20), surface),
+      new THREE.Mesh(new THREE.TubeGeometry(strand(Math.PI), 260, radius * 0.17, 20), surface),
+    )
+    // Rungs run straight across from one backbone to the other.
+    const rung = new THREE.CylinderGeometry(radius * 0.045, radius * 0.045, radius * 2, 10)
+    rung.rotateZ(Math.PI / 2)
+    const RUNGS = 26
+    for (let i = 0; i < RUNGS; i++) {
+      const y = -length / 2 + ((i + 0.5) / RUNGS) * length
+      const bar = new THREE.Mesh(rung, surface)
+      bar.position.y = y
+      bar.rotation.y = -angleAt(y)
+      helix.add(bar)
+    }
+    return helix
+  }
+
+  const main = buildHelix(1, 1.75, 0.24)
+  main.rotation.z = 0.62
+  const back = [
+    { helix: buildHelix(0.22, 2.6, 0.22), position: [-0.6, 0.25, -1.4], tilt: 0.3 },
+    { helix: buildHelix(0.15, 2.6, 0.2), position: [0.7, -0.3, -2], tilt: 0.9 },
+  ]
+  back.forEach(({ helix, position, tilt }) => {
+    helix.position.set(position[0], position[1], position[2])
+    helix.rotation.z = tilt
+    object.add(helix)
+  })
+  object.add(main)
 
   return {
     object,
     animate(_time, shownFor) {
-      turntable.rotation.y = -0.9 + shownFor * 0.45
+      main.rotation.y = shownFor * 0.9
+      back.forEach(({ helix }, i) => (helix.rotation.y = shownFor * (0.5 + i * 0.2)))
     },
   }
 }
@@ -259,5 +319,5 @@ function saturn(THREE: Three): Exhibit {
 
 /** The show, in order. */
 export function createExhibits(THREE: Three): Exhibit[] {
-  return [veyraMark(THREE), conceptCar(THREE), saturn(THREE)]
+  return [veyraMark(THREE), dnaHelix(THREE), saturn(THREE)]
 }

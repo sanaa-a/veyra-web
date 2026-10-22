@@ -8,11 +8,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-veyra text-white shadow-[0_10px_30px_-12px_var(--veyra-violet)] hover:brightness-110',
+        default: 'bg-veyra text-white shadow-[0_10px_30px_-12px_var(--veyra-violet)] hover:-translate-y-0.5 hover:brightness-110',
         light: 'bg-white text-background hover:bg-white/85',
         outline: 'border border-input bg-transparent text-foreground hover:border-veyra-blue hover:text-veyra-blue',
         ghost: 'text-muted-foreground hover:text-foreground',
-        whatsapp: 'bg-whatsapp text-[#04210f] shadow-[0_10px_30px_-12px_rgb(37_211_102/0.7)] hover:-translate-y-0.5 hover:bg-[#3ae07c]',
       },
       size: {
         default: 'h-11 px-5',
