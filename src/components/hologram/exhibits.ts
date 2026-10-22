@@ -5,8 +5,8 @@ type Three = typeof THREE_NS
 
 export type Exhibit = {
   object: THREE_NS.Object3D
-  /** Called every frame while the exhibit is on show. */
-  animate: (time: number) => void
+  /** Called every frame while the exhibit is on show, with the clock and the seconds since it appeared. */
+  animate: (time: number, shownFor: number) => void
 }
 
 const BLUE = 0x7badff
@@ -73,54 +73,80 @@ function veyraMark(THREE: Three): Exhibit {
   }
 }
 
-/** A glass perfume bottle with violet liquid and a brushed-gold cap: the kind of product a brand puts on a Veyra fan. */
-function perfumeBottle(THREE: Three): Exhibit {
+/** Oman's longitude on the globe, as the turn that brings it to face the viewer (see the note in `earth`). */
+const OMAN_FACING = -2.57
+
+/**
+ * The Earth in its real colours, from NASA satellite imagery: land and sea with a normal map for relief,
+ * glossy oceans, a drifting cloud layer and a thin blue edge of atmosphere. It turns so Oman passes the front.
+ */
+function earth(THREE: Three): Exhibit {
   const object = new THREE.Group()
+  const loader = new THREE.TextureLoader()
+  const load = (file: string, color = false) => {
+    const texture = loader.load(`/textures/earth/${file}`)
+    if (color) texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = 8
+    return texture
+  }
 
-  const profile = [
-    [0, -0.5], [0.27, -0.5], [0.31, -0.47], [0.33, -0.4], [0.34, -0.1], [0.32, 0.12],
-    [0.26, 0.24], [0.14, 0.31], [0.09, 0.34], [0.09, 0.42], [0, 0.42],
-  ].map(([x, y]) => new THREE.Vector2(x, y))
+  const RADIUS = 0.62
+  const globe = new THREE.Group()
+  globe.rotation.z = THREE.MathUtils.degToRad(-23.4) // the real axial tilt
 
-  const glass = new THREE.Mesh(
-    new THREE.LatheGeometry(profile, 96),
-    new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      metalness: 0,
-      roughness: 0.04,
-      transmission: 1,
-      thickness: 0.5,
-      ior: 1.5,
-      clearcoat: 1,
-      envMapIntensity: 1.4,
+  const surface = new THREE.Mesh(
+    new THREE.SphereGeometry(RADIUS, 96, 64),
+    new THREE.MeshPhongMaterial({
+      map: load('day.jpg', true),
+      normalMap: load('normal.jpg'),
+      normalScale: new THREE.Vector2(0.8, 0.8),
+      specularMap: load('specular.jpg'),
+      specular: new THREE.Color(0x333333),
+      shininess: 18,
     }),
   )
-
-  const liquidProfile = profile.slice(0, 6).map((p) => new THREE.Vector2(p.x * 0.86, p.y * 0.92 - 0.01))
-  liquidProfile.push(new THREE.Vector2(0, liquidProfile[liquidProfile.length - 1].y))
-  const liquid = new THREE.Mesh(
-    new THREE.LatheGeometry(liquidProfile, 96),
-    // Opaque, so the glass around it can refract it.
-    new THREE.MeshPhysicalMaterial({ color: PURPLE, emissive: VIOLET, emissiveIntensity: 0.25, roughness: 0.15, clearcoat: 1, envMapIntensity: 1 }),
+  const clouds = new THREE.Mesh(
+    new THREE.SphereGeometry(RADIUS * 1.012, 96, 64),
+    new THREE.MeshLambertMaterial({ map: load('clouds.png', true), transparent: true, depthWrite: false, opacity: 0.9 }),
   )
+  const spin = new THREE.Group()
+  spin.add(surface, clouds)
+  globe.add(spin)
 
-  const gold = new THREE.MeshPhysicalMaterial({ color: 0xb08d57, metalness: 1, roughness: 0.32, envMapIntensity: 0.9 })
-  const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.05, 64), gold)
-  collar.position.y = 0.43
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.26, 64), gold)
-  cap.position.y = 0.58
-
-  const bottle = new THREE.Group()
-  bottle.add(liquid, glass, collar, cap)
-  bottle.position.y = -0.04
-  bottle.scale.setScalar(0.98)
-  object.add(bottle)
+  // Atmosphere: a faint blue rim that brightens towards the edge of the disc.
+  const atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(RADIUS * 1.025, 64, 48),
+    new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vView;
+        void main() {
+          vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
+          vNormal = normalize(normalMatrix * normal);
+          vView = normalize(-viewPosition.xyz);
+          gl_Position = projectionMatrix * viewPosition;
+        }`,
+      fragmentShader: `
+        varying vec3 vNormal;
+        varying vec3 vView;
+        void main() {
+          float rim = pow(1.0 - max(dot(vNormal, vView), 0.0), 3.5);
+          gl_FragColor = vec4(vec3(0.3, 0.55, 1.0) * rim * 0.6, 1.0);
+        }`,
+    }),
+  )
+  object.add(globe, atmosphere)
 
   return {
     object,
-    animate(time) {
-      bottle.rotation.y = time * 0.7
-      bottle.rotation.z = Math.sin(time * 0.5) * 0.06
+    // On a three.js sphere the map's centre line (longitude 0) starts facing away to the left; this turn,
+    // worked out from Oman's longitude (57° E), brings Oman to the front halfway through the exhibit.
+    animate(_time, shownFor) {
+      spin.rotation.y = OMAN_FACING - 0.5 + shownFor * 0.17
+      clouds.rotation.y = shownFor * 0.02
     },
   }
 }
@@ -194,5 +220,5 @@ function dnaHelix(THREE: Three): Exhibit {
 
 /** The show, in order. */
 export function createExhibits(THREE: Three): Exhibit[] {
-  return [veyraMark(THREE), perfumeBottle(THREE), dnaHelix(THREE)]
+  return [veyraMark(THREE), earth(THREE), dnaHelix(THREE)]
 }

@@ -130,14 +130,15 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
     const liveSince = t - LIVE_AT
     let showing = -1
     let on = false
+    let intoExhibit = 0
     if (liveSince >= 0 && t < callToActionAt) {
       showing = Math.floor(liveSince / TIMELINE.exhibitSeconds)
-      const intoExhibit = liveSince % TIMELINE.exhibitSeconds
+      intoExhibit = liveSince % TIMELINE.exhibitSeconds
       on = intoExhibit > TIMELINE.switchFlicker || flicker(now, intoExhibit / TIMELINE.switchFlicker)
     }
     exhibits.forEach((exhibit, i) => {
       exhibit.object.visible = i === showing && on
-      if (i === showing) exhibit.animate(reducedMotion ? 0.6 : now)
+      if (i === showing) exhibit.animate(reducedMotion ? 0.6 : now, intoExhibit)
     })
 
     const callToAction = !reducedMotion && t >= callToActionAt && t < windDownAt
@@ -167,7 +168,7 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
         mesh.geometry?.dispose()
         const material = mesh.material as THREE_NS.Material | THREE_NS.Material[] | undefined
         ;(Array.isArray(material) ? material : material ? [material] : []).forEach((m) => {
-          ;(m as THREE_NS.MeshBasicMaterial).map?.dispose()
+          Object.values(m).forEach((value) => (value as THREE_NS.Texture | null)?.isTexture && (value as THREE_NS.Texture).dispose())
           m.dispose()
         })
       })
