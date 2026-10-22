@@ -152,68 +152,93 @@ function earth(THREE: Three): Exhibit {
 }
 
 /**
- * A DNA double helix for the classroom: two glossy backbones twisting round each other,
- * joined by base pairs that alternate between the brand blues and violets.
+ * A DNA double helix as chemists draw it: a space-filling model, every atom a sphere in the standard CPK colours
+ * (grey carbon, red oxygen, blue nitrogen, orange phosphorus, white hydrogen), built to B-DNA proportions
+ * with ten base pairs per turn and the narrow and wide grooves of the real molecule.
  */
 function dnaHelix(THREE: Three): Exhibit {
   const object = new THREE.Group()
   const helix = new THREE.Group()
 
-  const HEIGHT = 1.5
-  const RADIUS = 0.3
-  const TURNS = 2
-  const PAIRS = 22
-  const angleAt = (y: number) => ((y + HEIGHT / 2) / HEIGHT) * TURNS * Math.PI * 2
+  const ANGSTROM = 0.029 // scene units per ångström: the 20 Å wide molecule becomes about 0.6 units
+  const PAIRS = 15
+  const TWIST = (Math.PI * 2) / 10 // ten base pairs per turn
+  const RISE = 3.4 * ANGSTROM
+  const GROOVE = 2.4 // radians between the two strands; less than half a turn makes the minor groove
 
-  // The two backbones are the same curve, half a turn apart.
-  const strandCurve = (offset: number) =>
-    new THREE.CatmullRomCurve3(
-      Array.from({ length: 80 }, (_, i) => {
-        const y = -HEIGHT / 2 + (i / 79) * HEIGHT
-        const a = angleAt(y) + offset
-        return new THREE.Vector3(Math.cos(a) * RADIUS, y, Math.sin(a) * RADIUS)
-      }),
-    )
-  const strandMaterial = (color: number) =>
-    new THREE.MeshPhysicalMaterial({ color, metalness: 0.1, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.08, emissive: color, emissiveIntensity: 0.06, envMapIntensity: 0.7 })
-  helix.add(
-    new THREE.Mesh(new THREE.TubeGeometry(strandCurve(0), 240, 0.035, 16), strandMaterial(0x5c74e4)),
-    new THREE.Mesh(new THREE.TubeGeometry(strandCurve(Math.PI), 240, 0.035, 16), strandMaterial(PURPLE)),
-  )
+  const ELEMENTS = {
+    C: { color: 0x8c8c8c, radius: 1.7 },
+    O: { color: 0xd8322a, radius: 1.52 },
+    N: { color: 0x3653d0, radius: 1.55 },
+    P: { color: 0xf08a1c, radius: 1.8 },
+    H: { color: 0xf0f0f0, radius: 1.1 },
+  } as const
+  type Element = keyof typeof ELEMENTS
+  const atoms: Record<Element, THREE_NS.Vector3[]> = { C: [], O: [], N: [], P: [], H: [] }
 
-  // Each rung is two half-bars of different colours meeting in the middle, with a bead where it joins each backbone.
-  const PAIR_COLOURS = [BLUE, VIOLET, PURPLE, 0x5c74e4]
-  const halfBar = new THREE.CylinderGeometry(0.016, 0.016, RADIUS, 12)
-  halfBar.translate(0, RADIUS / 2, 0)
-  halfBar.rotateZ(-Math.PI / 2)
-  const bead = new THREE.SphereGeometry(0.045, 20, 20)
-  const pairMaterials = PAIR_COLOURS.map(
-    (color) => new THREE.MeshPhysicalMaterial({ color, roughness: 0.25, clearcoat: 1, emissive: color, emissiveIntensity: 0.12, envMapIntensity: 0.7 }),
-  )
-  for (let i = 0; i < PAIRS; i++) {
-    const y = -HEIGHT / 2 + ((i + 0.5) / PAIRS) * HEIGHT
-    const a = angleAt(y)
-    const rung = new THREE.Group()
-    rung.position.y = y
-    rung.rotation.y = -a
-    const left = new THREE.Mesh(halfBar, pairMaterials[i % 4])
-    const right = new THREE.Mesh(halfBar, pairMaterials[(i + 2) % 4])
-    right.rotation.y = Math.PI
-    const beadA = new THREE.Mesh(bead, pairMaterials[i % 4])
-    beadA.position.x = RADIUS
-    const beadB = new THREE.Mesh(bead, pairMaterials[(i + 2) % 4])
-    beadB.position.x = -RADIUS
-    rung.add(left, right, beadA, beadB)
-    helix.add(rung)
+  // Places an atom given in cylindrical coordinates: radius and angle (around the helix axis) and height, in ångströms.
+  const place = (element: Element, radius: number, angle: number, y: number) =>
+    atoms[element].push(new THREE.Vector3(Math.cos(angle) * radius * ANGSTROM, y, Math.sin(angle) * radius * ANGSTROM))
+
+  // A flat ring of atoms lying across the helix, centred at a given distance from the axis.
+  const ring = (elements: Element[], centre: number, angle: number, y: number, size: number, turn = 0) => {
+    const cx = Math.cos(angle) * centre
+    const cz = Math.sin(angle) * centre
+    elements.forEach((element, k) => {
+      const a = angle + turn + (k / elements.length) * Math.PI * 2
+      const x = cx + Math.cos(a) * size
+      const z = cz + Math.sin(a) * size
+      place(element, Math.hypot(x, z), Math.atan2(z, x), y)
+    })
   }
 
-  helix.rotation.z = 0.35
+  const nucleotide = (angle: number, y: number, purine: boolean, flip: number) => {
+    // Phosphate group on the outside of the backbone.
+    place('P', 9, angle, y)
+    place('O', 10.3, angle + 0.12, y + 0.02)
+    place('O', 10.3, angle - 0.12, y - 0.02)
+    place('O', 8.6, angle + 0.17 * flip, y + RISE * 0.35)
+    place('O', 8.4, angle - 0.15 * flip, y - RISE * 0.3)
+    // Deoxyribose sugar, tucked towards the minor groove.
+    ring(['C', 'C', 'O', 'C', 'C'], 7, angle + 0.38 * flip, y + RISE * 0.15 * flip, 1.25, 0.5)
+    place('H', 7.6, angle + 0.62 * flip, y + RISE * 0.3)
+    place('H', 5.7, angle + 0.3 * flip, y - RISE * 0.2)
+    // The base reaching in towards the axis: one ring for a pyrimidine, two fused rings for a purine.
+    ring(['N', 'C', 'N', 'C', 'C', 'C'], purine ? 2.4 : 3.2, angle + 0.25 * flip, y, 1.4, 0.3)
+    if (purine) ring(['N', 'C', 'N', 'C', 'C'], 4.6, angle + 0.42 * flip, y, 1.2, 0.9)
+    place('O', 1.0, angle + 0.6 * flip, y)
+    place('H', 1.9, angle - 0.5 * flip, y + 0.01)
+  }
+
+  const HEIGHT = (PAIRS - 1) * RISE
+  for (let i = 0; i < PAIRS; i++) {
+    const y = -HEIGHT / 2 + i * RISE
+    const angle = i * TWIST
+    const purineFirst = (i * 7) % 3 !== 0 // a fixed, varied sequence of A/G against T/C
+    nucleotide(angle, y, purineFirst, 1)
+    nucleotide(angle + GROOVE, y, !purineFirst, -1)
+  }
+
+  const sphere = new THREE.SphereGeometry(1, 18, 14)
+  const matrix = new THREE.Matrix4()
+  const scale = new THREE.Vector3()
+  const identity = new THREE.Quaternion()
+  ;(Object.keys(ELEMENTS) as Element[]).forEach((element) => {
+    const { color, radius } = ELEMENTS[element]
+    const material = new THREE.MeshPhysicalMaterial({ color, roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.3, envMapIntensity: 0.8 })
+    const mesh = new THREE.InstancedMesh(sphere, material, atoms[element].length)
+    scale.setScalar(radius * ANGSTROM * 0.95)
+    atoms[element].forEach((position, k) => mesh.setMatrixAt(k, matrix.compose(position, identity, scale)))
+    helix.add(mesh)
+  })
+
+  helix.rotation.z = 0.3
   object.add(helix)
 
   return {
     object,
     animate(time) {
-      helix.rotation.y = time * 0.8
+      helix.rotation.y = time * 0.6
     },
   }
 }
