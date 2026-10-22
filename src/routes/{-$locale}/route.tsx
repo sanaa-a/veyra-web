@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute, notFound } from '@tanstack/react-router'
 import { I18nextProvider } from 'react-i18next'
 import { CtaBand, SiteFooter, WhatsAppFab } from '@/components/layout/site-footer'
+import { PointerGlow } from '@/components/layout/pointer-glow'
 import { SiteHeader } from '@/components/layout/site-header'
 import { getI18n } from '@/i18n'
 import { DEFAULT_LOCALE, isLocale } from '@/i18n/locales'
@@ -27,6 +28,7 @@ function LocaleLayout() {
       <CtaBand />
       <SiteFooter />
       <WhatsAppFab />
+      <PointerGlow />
     </I18nextProvider>
   )
 }

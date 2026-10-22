@@ -310,8 +310,9 @@ function saturn(THREE: Three): Exhibit {
   return {
     object,
     animate(_time, shownFor) {
-      planet.rotation.y = shownFor * 0.25
-      body.rotation.y = Math.sin(shownFor * 0.4) * 0.15
+      // Spins on its axis while the whole tilted planet turns slowly, so the rings sweep round.
+      planet.rotation.y = shownFor * 0.6
+      object.rotation.y = shownFor * 0.45
     },
   }
 }
