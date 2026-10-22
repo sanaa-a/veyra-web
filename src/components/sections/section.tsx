@@ -14,7 +14,6 @@ export function Section({ className, children, glow, ...props }: ComponentProps<
 }
 
 type SectionHeadingProps = {
-  eyebrow: ReactNode
   title: ReactNode
   lead?: ReactNode
   /** The page's main heading uses h1; every other section uses h2. */
@@ -22,19 +21,12 @@ type SectionHeadingProps = {
   className?: string
 }
 
-/** Label in the left column, heading and lead on the right: the grid every section hangs from. */
-export function SectionHeading({ eyebrow, title, lead, as: Heading = 'h2', className }: SectionHeadingProps) {
+/** A section's heading and optional lead paragraph. */
+export function SectionHeading({ title, lead, as: Heading = 'h2', className }: SectionHeadingProps) {
   return (
-    <div className={cn('mb-12 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2.6fr)] md:gap-10 lg:mb-16', className)}>
-      <Eyebrow className="pt-2 text-sm sm:text-base">{eyebrow}</Eyebrow>
-      <div className="grid max-w-3xl gap-5">
-        <Heading className={cn('font-display leading-[1.02]', Heading === 'h1' ? 'text-gradient pb-1 text-5xl sm:text-7xl' : 'text-4xl sm:text-6xl')}>{title}</Heading>
-        {lead && <p className="max-w-[58ch] text-lg text-muted-foreground sm:text-xl">{lead}</p>}
-      </div>
+    <div data-reveal className={cn('mb-12 grid max-w-3xl gap-5 lg:mb-16', className)}>
+      <Heading className={cn('font-display leading-[1.05]', Heading === 'h1' ? 'text-4xl sm:text-6xl' : 'text-3xl sm:text-5xl')}>{title}</Heading>
+      {lead && <p className="max-w-[60ch] text-lg text-muted-foreground">{lead}</p>}
     </div>
   )
-}
-
-export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={cn('label-mono', className)}>{children}</span>
 }

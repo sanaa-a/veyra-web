@@ -14,7 +14,9 @@
     "photoPlaceholder": "Photo placeholder",
     "waMessage": "Hello Veyra, I would like to know more about your hologram displays.",
     "waPackage": "Hello Veyra, I would like a quote for the {{name}} package.",
-    "fanLabel": "Animated 3D simulation of a hologram fan drawing the Veyra logo"
+    "fanLabel": "Animated 3D simulation of a hologram fan drawing the Veyra logo",
+    "whatsapp": "Chat on WhatsApp",
+    "whatsappShort": "WhatsApp"
   },
   "cta": {
     "title": "Ready to make people stop and look?",
@@ -39,7 +41,6 @@
     }
   },
   "home": {
-    "eyebrow": "Holographic displays · Muscat, Oman",
     "titleStart": "Make your message",
     "titleAccent": "float in the air.",
     "lead": "Veyra brings 3D holographic displays to the places people gather. We supply the hologram fan, create the content, set it up and run it, so your brand, lesson or idea appears to hang in mid-air.",
@@ -96,7 +97,34 @@
         }
       }
     },
-    "bookDemo": "Book a demo"
+    "bookDemo": "Book a demo",
+    "uses": [
+      {
+        "label": "Advertising",
+        "value": "Shop windows"
+      },
+      {
+        "label": "Classrooms",
+        "value": "3D lessons"
+      },
+      {
+        "label": "Events",
+        "value": "Booths and stages"
+      },
+      {
+        "label": "Product launches",
+        "value": "Live reveals"
+      },
+      {
+        "label": "Exhibitions",
+        "value": "Trade shows"
+      },
+      {
+        "label": "Lobbies",
+        "value": "Brand welcome"
+      }
+    ],
+    "usesLabel": "What Veyra is used for"
   },
   "services": {
     "eyebrow": "Services",
@@ -244,7 +272,6 @@
     "services": "Services",
     "demoTitle": "Book a demo",
     "demoBody": "See a Veyra fan in person. Message us on WhatsApp and we will set up a time.",
-    "whatsapp": "Chat on WhatsApp",
     "follow": "Follow Veyra on {{network}}"
   }
 }

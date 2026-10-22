@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { MemberCard } from '@/components/sections/member-card'
-import { Eyebrow, Section, SectionHeading } from '@/components/sections/section'
+import { Section, SectionHeading } from '@/components/sections/section'
 import { ADVISORS, TEAM } from '@/content/team'
 import { pageHead } from '@/lib/seo'
 
@@ -18,8 +18,8 @@ function AboutPage() {
   return (
     <>
       <Section glow="violet">
-        <SectionHeading as="h1" eyebrow={t('about.eyebrow')} title={t('about.title')} />
-        <div className="grid items-start gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-14">
+        <SectionHeading as="h1" title={t('about.title')} />
+        <div data-reveal className="grid items-start gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-14">
           <div className="grid min-w-0 gap-4">
             <h2 className="text-2xl font-semibold">{t('about.who.title')}</h2>
             {t('about.who.body', { returnObjects: true }).map((paragraph) => (
@@ -37,8 +37,8 @@ function AboutPage() {
           </div>
           <div className="grid min-w-0 gap-8">
             {STATEMENTS.map((key) => (
-              <div key={key} className="grid gap-3 border-t pt-5">
-                <Eyebrow>{t(`about.${key}.title`)}</Eyebrow>
+              <div key={key} className="grid gap-3 rounded-xl border bg-card/60 p-6">
+                <h3 className="font-semibold text-veyra-blue">{t(`about.${key}.title`)}</h3>
                 <p className="text-lg">{t(`about.${key}.body`)}</p>
               </div>
             ))}
@@ -47,13 +47,13 @@ function AboutPage() {
       </Section>
 
       <Section glow="blue">
-        <SectionHeading eyebrow={t('about.team.eyebrow')} title={t('about.team.title')} lead={t('about.team.lead')} />
+        <SectionHeading title={t('about.team.title')} lead={t('about.team.lead')} />
         <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {TEAM.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}
         </div>
-        <h3 className="label-mono mt-20 mb-6 border-t pt-6">{t('about.team.advisors')}</h3>
+        <h3 className="mt-20 mb-6 border-t pt-8 text-2xl font-semibold">{t('about.team.advisors')}</h3>
         <div className="grid gap-8 md:grid-cols-2">
           {ADVISORS.map((member) => (
             <MemberCard key={member.id} member={member} compact />

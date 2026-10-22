@@ -36,7 +36,7 @@ export function SiteFooter() {
           </a>
           <a href={whatsappUrl(t('common.waMessage'))} target="_blank" rel="noopener noreferrer" className={cn('inline-flex items-center gap-3', linkClass)}>
             <WhatsAppIcon className="size-4.5 text-whatsapp" />
-            {t('footer.whatsapp')}
+            {t('common.whatsapp')}
           </a>
           <ul className="flex gap-2.5">
             {SOCIALS.map(({ name, href, icon: Icon }) => (
@@ -98,28 +98,33 @@ function FooterColumn({ title, children }: { title: string; children: ReactNode 
 export function CtaBand() {
   const { t } = useTranslation()
   return (
-    <section className="relative isolate overflow-hidden bg-[linear-gradient(120deg,#26206b,#5c74e4_38%,#836ffd_68%,#9e54fd)] text-white">
-      {/* The fan's LED strips, as faint diagonal lines over the gradient. */}
-      <div aria-hidden className="absolute inset-0 -z-10 opacity-20 [background-image:repeating-linear-gradient(115deg,transparent_0_38px,rgb(255_255_255/0.35)_38px_39px)]" />
-      <Container className="grid gap-10 py-20 sm:py-28 md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] md:items-end">
-        <h2 className="font-display text-4xl leading-[1.02] sm:text-6xl">{t('cta.title')}</h2>
-        <div className="grid gap-5">
-          <p className="text-white/80">{t('cta.body')}</p>
-          <ContactButton size="lg" variant="light" className="justify-self-start" />
+    <section className="py-16 sm:py-24">
+      <Container>
+        <div
+          data-reveal
+          className="relative isolate grid gap-8 overflow-hidden rounded-2xl border border-veyra-violet/30 bg-[linear-gradient(125deg,#1b1c4f,#33388f_45%,#4e2f8f)] p-8 sm:p-12 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:items-end lg:p-16"
+        >
+          <div aria-hidden className="absolute -end-24 -top-24 -z-10 size-80 rounded-full bg-veyra-purple/30 blur-3xl" />
+          <h2 className="font-display text-3xl leading-[1.05] sm:text-5xl">{t('cta.title')}</h2>
+          <div className="grid gap-5">
+            <p className="text-white/80">{t('cta.body')}</p>
+            <ContactButton size="lg" className="justify-self-start" />
+          </div>
         </div>
       </Container>
     </section>
   )
 }
 
-/** The floating WhatsApp button in the bottom corner of every page. */
+/** The floating WhatsApp button: a labelled pill on wider screens, the round icon on phones. */
 export function WhatsAppFab() {
+  const { t } = useTranslation()
   return (
     <ContactButton
-      variant="whatsapp"
-      size="icon"
-      label={null}
-      className="fixed end-[calc(1rem+env(safe-area-inset-right))] bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 size-13 rounded-full shadow-lg shadow-black/50 [&_svg:not([class*='size-'])]:size-6"
+      size="lg"
+      label={<span className="hidden sm:inline">{t('common.whatsapp')}</span>}
+      aria-label={t('common.whatsapp')}
+      className="fixed end-[calc(1rem+env(safe-area-inset-right))] bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 size-14 px-0 sm:w-auto sm:px-6 [&_svg:not([class*='size-'])]:size-6"
     />
   )
 }

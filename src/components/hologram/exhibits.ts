@@ -73,177 +73,191 @@ function veyraMark(THREE: Three): Exhibit {
   }
 }
 
-/** Oman's longitude on the globe, as the turn that brings it to face the viewer (see the note in `earth`). */
-const OMAN_FACING = -2.57
-
 /**
- * The Earth in its real colours, from NASA satellite imagery: land and sea with a normal map for relief,
- * glossy oceans, a drifting cloud layer and a thin blue edge of atmosphere. It turns so Oman passes the front.
+ * A concept car (a public-domain model, optimised for the Khronos glTF samples by Eric Chadwick, CC BY 4.0),
+ * turning slowly like a car on a showroom turntable. It loads in the background; the slot stays dark until it arrives.
  */
-function earth(THREE: Three): Exhibit {
+function conceptCar(THREE: Three): Exhibit {
   const object = new THREE.Group()
-  const loader = new THREE.TextureLoader()
-  const load = (file: string, color = false) => {
-    const texture = loader.load(`/textures/earth/${file}`)
-    if (color) texture.colorSpace = THREE.SRGBColorSpace
-    texture.anisotropy = 8
-    return texture
-  }
+  const turntable = new THREE.Group()
+  turntable.rotation.x = 0.32 // seen from a little above, as people look at a car on a stand
+  object.add(turntable)
 
-  const RADIUS = 0.62
-  const globe = new THREE.Group()
-  globe.rotation.z = THREE.MathUtils.degToRad(-23.4) // the real axial tilt
-
-  const surface = new THREE.Mesh(
-    new THREE.SphereGeometry(RADIUS, 96, 64),
-    new THREE.MeshPhongMaterial({
-      map: load('day.jpg', true),
-      normalMap: load('normal.jpg'),
-      normalScale: new THREE.Vector2(0.8, 0.8),
-      specularMap: load('specular.jpg'),
-      specular: new THREE.Color(0x333333),
-      shininess: 18,
-    }),
-  )
-  const clouds = new THREE.Mesh(
-    new THREE.SphereGeometry(RADIUS * 1.012, 96, 64),
-    new THREE.MeshLambertMaterial({ map: load('clouds.png', true), transparent: true, depthWrite: false, opacity: 0.9 }),
-  )
-  const spin = new THREE.Group()
-  spin.add(surface, clouds)
-  globe.add(spin)
-
-  // Atmosphere: a faint blue rim that brightens towards the edge of the disc.
-  const atmosphere = new THREE.Mesh(
-    new THREE.SphereGeometry(RADIUS * 1.025, 64, 48),
-    new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexShader: `
-        varying vec3 vNormal;
-        varying vec3 vView;
-        void main() {
-          vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
-          vNormal = normalize(normalMatrix * normal);
-          vView = normalize(-viewPosition.xyz);
-          gl_Position = projectionMatrix * viewPosition;
-        }`,
-      fragmentShader: `
-        varying vec3 vNormal;
-        varying vec3 vView;
-        void main() {
-          float rim = pow(1.0 - max(dot(vNormal, vView), 0.0), 3.5);
-          gl_FragColor = vec4(vec3(0.3, 0.55, 1.0) * rim * 0.6, 1.0);
-        }`,
-    }),
-  )
-  object.add(globe, atmosphere)
+  Promise.all([import('three/examples/jsm/loaders/GLTFLoader.js'), import('three/examples/jsm/libs/meshopt_decoder.module.js')])
+    .then(([{ GLTFLoader }, { MeshoptDecoder }]) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('/models/concept-car.glb'))
+    .then(({ scene: car }) => {
+      const box = new THREE.Box3().setFromObject(car)
+      const size = box.getSize(new THREE.Vector3())
+      car.position.sub(box.getCenter(new THREE.Vector3()))
+      const fit = new THREE.Group()
+      fit.add(car)
+      fit.scale.setScalar(1.9 / Math.max(size.x, size.z))
+      turntable.add(fit)
+    })
+    .catch(() => {
+      // Without the model the show simply skips to the next exhibit's light.
+    })
 
   return {
     object,
-    // On a three.js sphere the map's centre line (longitude 0) starts facing away to the left; this turn,
-    // worked out from Oman's longitude (57° E), brings Oman to the front halfway through the exhibit.
     animate(_time, shownFor) {
-      spin.rotation.y = OMAN_FACING - 0.5 + shownFor * 0.17
-      clouds.rotation.y = shownFor * 0.02
+      turntable.rotation.y = -0.9 + shownFor * 0.45
     },
   }
 }
 
 /**
- * A DNA double helix as chemists draw it: a space-filling model, every atom a sphere in the standard CPK colours
- * (grey carbon, red oxygen, blue nitrogen, orange phosphorus, white hydrogen), built to B-DNA proportions
- * with ten base pairs per turn and the narrow and wide grooves of the real molecule.
+ * A material lit by a single distant sun and nothing else, for objects in space. The planet gets soft diffuse
+ * shading with a dark night side; the rings are lit evenly but fall into the planet's shadow behind it.
  */
-function dnaHelix(THREE: Three): Exhibit {
-  const object = new THREE.Group()
-  const helix = new THREE.Group()
-
-  const ANGSTROM = 0.029 // scene units per ångström: the 20 Å wide molecule becomes about 0.6 units
-  const PAIRS = 15
-  const TWIST = (Math.PI * 2) / 10 // ten base pairs per turn
-  const RISE = 3.4 * ANGSTROM
-  const GROOVE = 2.4 // radians between the two strands; less than half a turn makes the minor groove
-
-  const ELEMENTS = {
-    C: { color: 0x8c8c8c, radius: 1.7 },
-    O: { color: 0xd8322a, radius: 1.52 },
-    N: { color: 0x3653d0, radius: 1.55 },
-    P: { color: 0xf08a1c, radius: 1.8 },
-    H: { color: 0xf0f0f0, radius: 1.1 },
-  } as const
-  type Element = keyof typeof ELEMENTS
-  const atoms: Record<Element, THREE_NS.Vector3[]> = { C: [], O: [], N: [], P: [], H: [] }
-
-  // Places an atom given in cylindrical coordinates: radius and angle (around the helix axis) and height, in ångströms.
-  const place = (element: Element, radius: number, angle: number, y: number) =>
-    atoms[element].push(new THREE.Vector3(Math.cos(angle) * radius * ANGSTROM, y, Math.sin(angle) * radius * ANGSTROM))
-
-  // A flat ring of atoms lying across the helix, centred at a given distance from the axis.
-  const ring = (elements: Element[], centre: number, angle: number, y: number, size: number, turn = 0) => {
-    const cx = Math.cos(angle) * centre
-    const cz = Math.sin(angle) * centre
-    elements.forEach((element, k) => {
-      const a = angle + turn + (k / elements.length) * Math.PI * 2
-      const x = cx + Math.cos(a) * size
-      const z = cz + Math.sin(a) * size
-      place(element, Math.hypot(x, z), Math.atan2(z, x), y)
-    })
-  }
-
-  const nucleotide = (angle: number, y: number, purine: boolean, flip: number) => {
-    // Phosphate group on the outside of the backbone.
-    place('P', 9, angle, y)
-    place('O', 10.3, angle + 0.12, y + 0.02)
-    place('O', 10.3, angle - 0.12, y - 0.02)
-    place('O', 8.6, angle + 0.17 * flip, y + RISE * 0.35)
-    place('O', 8.4, angle - 0.15 * flip, y - RISE * 0.3)
-    // Deoxyribose sugar, tucked towards the minor groove.
-    ring(['C', 'C', 'O', 'C', 'C'], 7, angle + 0.38 * flip, y + RISE * 0.15 * flip, 1.25, 0.5)
-    place('H', 7.6, angle + 0.62 * flip, y + RISE * 0.3)
-    place('H', 5.7, angle + 0.3 * flip, y - RISE * 0.2)
-    // The base reaching in towards the axis: one ring for a pyrimidine, two fused rings for a purine.
-    ring(['N', 'C', 'N', 'C', 'C', 'C'], purine ? 2.4 : 3.2, angle + 0.25 * flip, y, 1.4, 0.3)
-    if (purine) ring(['N', 'C', 'N', 'C', 'C'], 4.6, angle + 0.42 * flip, y, 1.2, 0.9)
-    place('O', 1.0, angle + 0.6 * flip, y)
-    place('H', 1.9, angle - 0.5 * flip, y + 0.01)
-  }
-
-  const HEIGHT = (PAIRS - 1) * RISE
-  for (let i = 0; i < PAIRS; i++) {
-    const y = -HEIGHT / 2 + i * RISE
-    const angle = i * TWIST
-    const purineFirst = (i * 7) % 3 !== 0 // a fixed, varied sequence of A/G against T/C
-    nucleotide(angle, y, purineFirst, 1)
-    nucleotide(angle + GROOVE, y, !purineFirst, -1)
-  }
-
-  const sphere = new THREE.SphereGeometry(1, 18, 14)
-  const matrix = new THREE.Matrix4()
-  const scale = new THREE.Vector3()
-  const identity = new THREE.Quaternion()
-  ;(Object.keys(ELEMENTS) as Element[]).forEach((element) => {
-    const { color, radius } = ELEMENTS[element]
-    const material = new THREE.MeshPhysicalMaterial({ color, roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.3, envMapIntensity: 0.8 })
-    const mesh = new THREE.InstancedMesh(sphere, material, atoms[element].length)
-    scale.setScalar(radius * ANGSTROM * 0.95)
-    atoms[element].forEach((position, k) => mesh.setMatrixAt(k, matrix.compose(position, identity, scale)))
-    helix.add(mesh)
+function sunlit(THREE: Three, map: THREE_NS.Texture, sun: THREE_NS.Vector3, kind: 'planet' | 'rings', planetRadius = 0) {
+  return new THREE.ShaderMaterial({
+    uniforms: { map: { value: map }, sun: { value: sun }, planetRadius: { value: planetRadius } },
+    transparent: kind === 'rings',
+    depthWrite: kind === 'planet',
+    side: kind === 'rings' ? THREE.DoubleSide : THREE.FrontSide,
+    toneMapped: false,
+    vertexShader: `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vOffset;
+      void main() {
+        vUv = uv;
+        vNormal = normalize(mat3(modelMatrix) * normal);
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        vOffset = world.xyz - (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }`,
+    fragmentShader: `
+      uniform sampler2D map;
+      uniform vec3 sun;
+      uniform float planetRadius;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vOffset;
+      void main() {
+        vec4 colour = texture2D(map, vUv);
+        ${
+          kind === 'planet'
+            ? 'float light = smoothstep(-0.08, 0.6, dot(normalize(vNormal), sun)) * 1.05 + 0.015;'
+            : `float along = dot(vOffset, sun);
+        float fromAxis = length(vOffset - along * sun);
+        float light = (along < 0.0 && fromAxis < planetRadius) ? 0.06 : 0.95;`
+        }
+        gl_FragColor = vec4(colour.rgb * light, colour.a);
+        #include <colorspace_fragment>
+      }`,
   })
+}
 
-  helix.rotation.z = 0.3
-  object.add(helix)
+/** Seeded noise, so Saturn's cloud bands come out the same on every visit. */
+const bandNoise = (x: number) => Math.sin(x * 12.9898) * 0.5 + Math.sin(x * 4.1414 + 1.3) * 0.3 + Math.sin(x * 31.7 + 0.4) * 0.2
+
+/**
+ * Saturn in its true colours: pale butterscotch cloud bands with a grey-blue pole, and rings laid out like
+ * the real ones (faint C ring, bright B ring, the dark Cassini Division, the A ring with the Encke Gap),
+ * tilted at Saturn's 26.7°.
+ */
+function saturn(THREE: Three): Exhibit {
+  const object = new THREE.Group()
+  const RADIUS = 0.36
+
+  // Planet: a texture of latitude bands, drawn once.
+  const planetCanvas = document.createElement('canvas')
+  planetCanvas.width = 64
+  planetCanvas.height = 512
+  const planetContext = planetCanvas.getContext('2d')
+  if (planetContext) {
+    // Colours sampled from Cassini images: soft gold and tan belts, paler zones.
+    const tones = [
+      [214, 186, 136],
+      [196, 160, 108],
+      [226, 204, 160],
+      [184, 146, 96],
+      [208, 178, 126],
+      [172, 134, 88],
+    ]
+    for (let y = 0; y < planetCanvas.height; y++) {
+      const latitude = y / planetCanvas.height // 0 = north pole, 1 = south pole
+      // Broad, smoothly blended bands: walk through the palette with a slow noise.
+      const p = (((bandNoise(latitude * 3.2) + 1) / 2) * (tones.length - 1) + latitude * 2) % (tones.length - 1)
+      const i = Math.floor(p)
+      const f = p - i
+      const fine = 1 + bandNoise(latitude * 40) * 0.035
+      const rgb = tones[i].map((c, k) => Math.round((c + (tones[i + 1][k] - c) * f) * fine))
+      // The poles shade to a cool grey-blue, strongest in the north.
+      const polar = Math.max(0, 1 - Math.min(latitude, 1 - latitude) / (latitude < 0.5 ? 0.14 : 0.09))
+      const pole = [126, 140, 150]
+      const mixed = rgb.map((c, k) => Math.round(c + (pole[k] - c) * polar * 0.8))
+      planetContext.fillStyle = `rgb(${mixed.join(',')})`
+      planetContext.fillRect(0, y, planetCanvas.width, 1)
+    }
+  }
+  const planetTexture = new THREE.CanvasTexture(planetCanvas)
+  planetTexture.colorSpace = THREE.SRGBColorSpace
+  // Lit only by the sun, with no studio fill, so it keeps its true colours and a real night side.
+  const sunDirection = new THREE.Vector3(-1, 0.3, 0.4).normalize()
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(RADIUS, 96, 64), sunlit(THREE, planetTexture, sunDirection, 'planet'))
+
+  // Rings, from 1.24 to 2.27 planet radii. The texture runs from the inner edge (left) to the outer edge (right).
+  const INNER = 1.24
+  const OUTER = 2.27
+  const ringCanvas = document.createElement('canvas')
+  ringCanvas.width = 1024
+  ringCanvas.height = 1
+  const ringContext = ringCanvas.getContext('2d')
+  if (ringContext) {
+    for (let x = 0; x < ringCanvas.width; x++) {
+      const r = INNER + (x / ringCanvas.width) * (OUTER - INNER)
+      let density = 0
+      let colour = [205, 190, 160]
+      if (r < 1.53) {
+        density = 0.18 + 0.1 * ((r - INNER) / 0.29) // C ring: faint, greyish
+        colour = [128, 116, 100]
+      } else if (r < 1.95) {
+        density = 0.85 + 0.12 * Math.sin(r * 60) // B ring: the brightest
+        colour = [214, 192, 152]
+      } else if (r < 2.03) {
+        density = 0.06 // Cassini Division
+      } else if (r < 2.27) {
+        density = Math.abs(r - 2.214) < 0.008 ? 0.05 : 0.6 + 0.08 * Math.sin(r * 90) // A ring, with the Encke Gap
+        colour = [184, 166, 136]
+      }
+      density *= 0.9 + 0.1 * Math.sin(x * 1.7) * Math.sin(x * 0.31)
+      ringContext.fillStyle = `rgba(${colour.join(',')}, ${Math.max(0, Math.min(1, density))})`
+      ringContext.fillRect(x, 0, 1, 1)
+    }
+  }
+  const ringTexture = new THREE.CanvasTexture(ringCanvas)
+  ringTexture.colorSpace = THREE.SRGBColorSpace
+  const ringGeometry = new THREE.RingGeometry(RADIUS * INNER, RADIUS * OUTER, 256, 1)
+  const position = ringGeometry.attributes.position
+  const uv = ringGeometry.attributes.uv
+  for (let i = 0; i < position.count; i++) {
+    const r = Math.hypot(position.getX(i), position.getY(i)) / RADIUS
+    uv.setXY(i, (r - INNER) / (OUTER - INNER), 0.5)
+  }
+  const rings = new THREE.Mesh(
+    ringGeometry,
+    sunlit(THREE, ringTexture, sunDirection, 'rings', RADIUS),
+  )
+  rings.rotation.x = -Math.PI / 2
+
+  const body = new THREE.Group()
+  body.add(planet, rings)
+  body.rotation.set(0.42, 0, THREE.MathUtils.degToRad(-26.7)) // axial tilt, seen from slightly above the ring plane
+  object.add(body)
 
   return {
     object,
-    animate(time) {
-      helix.rotation.y = time * 0.6
+    animate(_time, shownFor) {
+      planet.rotation.y = shownFor * 0.25
+      body.rotation.y = Math.sin(shownFor * 0.4) * 0.15
     },
   }
 }
 
 /** The show, in order. */
 export function createExhibits(THREE: Three): Exhibit[] {
-  return [veyraMark(THREE), earth(THREE), dnaHelix(THREE)]
+  return [veyraMark(THREE), conceptCar(THREE), saturn(THREE)]
 }

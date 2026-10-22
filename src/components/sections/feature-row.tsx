@@ -1,14 +1,8 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-/** Each row takes the next brand colour in turn, so a list reads as blue, violet, purple, blue... */
-const TONES = [
-  'text-veyra-blue bg-veyra-blue/10 border-veyra-blue/30 group-hover:bg-veyra-blue/20',
-  'text-veyra-violet bg-veyra-violet/10 border-veyra-violet/30 group-hover:bg-veyra-violet/20',
-  'text-veyra-purple bg-veyra-purple/10 border-veyra-purple/30 group-hover:bg-veyra-purple/20',
-]
-const RULES = ['hover:border-veyra-blue', 'hover:border-veyra-violet', 'hover:border-veyra-purple']
+const TONES = ['text-veyra-blue', 'text-veyra-violet', 'text-veyra-purple']
 
 type FeatureRowProps = {
   /** Position in its list; picks the colour. */
@@ -20,15 +14,19 @@ type FeatureRowProps = {
   children?: ReactNode
 }
 
-/** One item in a ruled list: icon, title and text. Used for "how it works" and the services. */
+/** One feature as a card: icon, title and text. Used for "how it works" and the services. */
 export function FeatureRow({ icon: Icon, title, body, index = 0, className, children }: FeatureRowProps) {
-  const tone = index % TONES.length
   return (
-    <article className={cn('group grid min-w-0 content-start gap-4 border-t pt-6 transition-colors', RULES[tone], className)}>
-      <span className={cn('grid size-11 place-items-center rounded-sm border transition-colors', TONES[tone])}>
-        <Icon className="size-5" strokeWidth={1.5} aria-hidden />
-      </span>
-      <h3 className="text-2xl font-semibold">{title}</h3>
+    <article
+      data-reveal
+      style={{ '--reveal-delay': `${(index % 3) * 90}ms` } as CSSProperties}
+      className={cn(
+        'group grid min-w-0 content-start gap-3 rounded-xl border bg-card/60 p-6 transition-[border-color,transform,background-color] duration-300 hover:-translate-y-1 hover:border-veyra-blue/50 hover:bg-card sm:p-7',
+        className,
+      )}
+    >
+      <Icon className={cn('mb-2 size-7 transition-transform duration-300 group-hover:scale-110', TONES[index % TONES.length])} strokeWidth={1.6} aria-hidden />
+      <h3 className="text-xl font-semibold sm:text-2xl">{title}</h3>
       <p className="max-w-[46ch] text-muted-foreground">{body}</p>
       {children}
     </article>
