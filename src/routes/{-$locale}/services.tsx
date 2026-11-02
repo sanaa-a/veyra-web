@@ -19,11 +19,12 @@ function ServicesPage() {
       <SectionHeading as="h1" title={t('services.title')} lead={t('services.lead')} />
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map(({ id, icon }, index) => (
-          <FeatureRow key={id} index={index} icon={icon} title={t(`services.items.${id}.title`)} body={t(`services.items.${id}.body`)} />
+          <FeatureRow key={id} index={index} headingLevel="h2" icon={icon} title={t(`services.items.${id}.title`)} body={t(`services.items.${id}.body`)} />
         ))}
       </div>
       <FeatureRow
         icon={FEATURED_SERVICE.icon}
+        headingLevel="h2"
         title={t(`services.items.${featured}.title`)}
         body={t(`services.items.${featured}.body`)}
         index={1}

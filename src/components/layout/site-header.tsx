@@ -19,7 +19,9 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-[env(safe-area-inset-top)] z-40 border-b bg-background/85 backdrop-blur-md">
+    <header className="header-settle sticky top-[env(safe-area-inset-top)] z-40 border-b bg-background/85 backdrop-blur-md">
+      {/* How far down the page you are, as a thin line along the bottom of the header. */}
+      <div aria-hidden className="scroll-progress bg-veyra absolute inset-x-0 -bottom-px hidden h-0.5 supports-[animation-timeline:scroll()]:block" />
       <Container className="flex items-center gap-3 py-3 md:gap-5">
         <PageLink page={SITE_PAGES[0]} aria-label="Veyra">
           <Logo />

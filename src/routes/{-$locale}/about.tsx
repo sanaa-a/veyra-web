@@ -49,14 +49,14 @@ function AboutPage() {
       <Section glow="blue">
         <SectionHeading title={t('about.team.title')} lead={t('about.team.lead')} />
         <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {TEAM.map((member) => (
-            <MemberCard key={member.id} member={member} />
+          {TEAM.map((member, index) => (
+            <MemberCard key={member.id} member={member} index={index % 3} />
           ))}
         </div>
         <h3 className="mt-20 mb-6 border-t pt-8 text-2xl font-semibold">{t('about.team.advisors')}</h3>
         <div className="grid gap-8 md:grid-cols-2">
-          {ADVISORS.map((member) => (
-            <MemberCard key={member.id} member={member} compact />
+          {ADVISORS.map((member, index) => (
+            <MemberCard key={member.id} member={member} index={index} compact />
           ))}
         </div>
       </Section>

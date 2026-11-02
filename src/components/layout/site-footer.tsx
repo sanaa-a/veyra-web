@@ -12,7 +12,7 @@ import { SITE_PAGES } from '@/config/pages'
 import { ContactButton } from '@/components/common/contact-button'
 
 const SOCIALS = [
-  { name: 'Instagram', href: `https://instagram.com/${SITE.instagram}`, icon: InstagramIcon },
+  { name: 'Instagram', href: SITE.instagram, icon: InstagramIcon },
   { name: 'LinkedIn', href: SITE.linkedin, icon: LinkedInIcon },
 ] as const
 

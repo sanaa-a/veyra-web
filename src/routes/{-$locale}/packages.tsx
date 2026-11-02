@@ -16,8 +16,8 @@ function PackagesPage() {
     <Section glow="purple">
       <SectionHeading as="h1" title={t('packages.title')} lead={t('packages.lead')} />
       <div className="grid gap-4 md:grid-cols-3">
-        {PACKAGES.map(({ id, featured }) => (
-          <PackageCard key={id} id={id} featured={featured} />
+        {PACKAGES.map(({ id, featured }, index) => (
+          <PackageCard key={id} id={id} featured={featured} index={index} />
         ))}
       </div>
       <p className="mt-10 max-w-[60ch] text-muted-foreground">{t('packages.note')}</p>

@@ -12,8 +12,8 @@ export function UsesTicker() {
     <ul className="flex shrink-0 items-center gap-12 pe-12" aria-hidden={hidden || undefined}>
       {uses.map(({ label, value }) => (
         <li key={label} className="flex items-center gap-3 whitespace-nowrap">
-          <span className="font-mono text-sm tracking-[0.12em] text-foreground uppercase rtl:font-sans rtl:tracking-normal">{label}:</span>
-          <span className="rounded-md bg-veyra-blue px-2.5 py-1 font-mono text-sm font-medium text-background uppercase rtl:font-sans">{value}</span>
+          <span className="text-sm font-medium tracking-[0.12em] text-foreground uppercase rtl:tracking-normal">{label}:</span>
+          <span className="rounded-md bg-veyra-blue px-2.5 py-1 text-sm font-semibold tracking-wide text-background uppercase rtl:tracking-normal">{value}</span>
         </li>
       ))}
     </ul>
