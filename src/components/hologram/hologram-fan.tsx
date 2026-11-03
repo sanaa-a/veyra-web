@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { whatsappUrl } from '@/config/site'
-import { cn } from '@/lib/utils'
+import { cn, prefersReducedMotion } from '@/lib/utils'
 
 /**
  * A Three.js Veyra fan, on a loop: it rests, spins up until the blades vanish, shows each 3D exhibit,
@@ -12,19 +12,28 @@ export function HologramFan({ className }: { className?: string }) {
   const { t } = useTranslation()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [callToAction, setCallToAction] = useState(false)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     let dispose: (() => void) | undefined
     let cancelled = false
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
 
-    Promise.all([import('three'), import('./fan-scene')])
-      .then(([THREE, { mountFan }]) => {
-        if (cancelled) return
-        dispose = mountFan(THREE, canvas, { reducedMotion, onCallToAction: setCallToAction }).dispose
-      })
+    // Fetch the scene straight away, but build it once the page has painted and the browser is idle,
+    // so compiling the 3D scene never holds up the first view of the page.
+    const whenIdle = (run: () => void) =>
+      'requestIdleCallback' in window ? requestIdleCallback(run, { timeout: 1500 }) : setTimeout(run, 200)
+
+    import('./fan-scene')
+      .then(({ mountFan }) =>
+        whenIdle(() => {
+          if (cancelled) return
+          dispose = mountFan(canvas, { reducedMotion, onCallToAction: setCallToAction }).dispose
+          setReady(true)
+        }),
+      )
       .catch(() => {
         // No WebGL: the stage stays empty and the page still works.
       })
@@ -37,7 +46,7 @@ export function HologramFan({ className }: { className?: string }) {
 
   return (
     <figure className={cn('relative m-0', className)}>
-      <canvas ref={canvasRef} role="img" aria-label={t('common.fanLabel')} className="size-full" />
+      <canvas ref={canvasRef} role="img" aria-label={t('common.fanLabel')} className={cn('size-full transition-opacity duration-700', !ready && 'opacity-0')} />
       {/* The show's last beat: plain white words over the spinning fan, linking to WhatsApp. */}
       <a
         href={whatsappUrl(t('common.waMessage'))}

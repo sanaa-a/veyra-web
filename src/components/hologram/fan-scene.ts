@@ -1,9 +1,7 @@
-import type * as THREE_NS from 'three'
+import * as THREE from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { createFan, FAN_RADIUS } from './fan-model'
 import { createExhibits } from './exhibits'
-
-type Three = typeof THREE_NS
 
 /**
  * One loop of the show, in seconds: the fan rests, tests its LEDs and spins up; each exhibit plays in turn;
@@ -38,9 +36,10 @@ const flicker = (t: number, density: number) => Math.sin(t * 97.3) * Math.sin(t 
 type MountOptions = { reducedMotion: boolean; onCallToAction?: (showing: boolean) => void }
 
 /** Mounts the looping hologram show into a canvas. Returns a cleanup function. */
-export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotion, onCallToAction }: MountOptions) {
+export function mountFan(canvas: HTMLCanvasElement, { reducedMotion, onCallToAction }: MountOptions) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  // Phones have dense screens but small GPUs; 1.5x is indistinguishable on a spinning, glowing scene and far cheaper.
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2))
   // Transparent, so the page's own violet-black shows behind the fan.
   renderer.setClearColor(0x000000, 0)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -64,11 +63,11 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
   rim.position.set(2.5, -1, -1)
   scene.add(key, rim, new THREE.AmbientLight(0xffffff, 0.15))
 
-  const fan = createFan(THREE)
+  const fan = createFan()
   scene.add(fan.group)
 
   const stage = new THREE.Group()
-  const exhibits = createExhibits(THREE)
+  const exhibits = createExhibits()
   exhibits.forEach((exhibit) => {
     exhibit.object.visible = false
     stage.add(exhibit.object)
@@ -164,11 +163,11 @@ export function mountFan(THREE: Three, canvas: HTMLCanvasElement, { reducedMotio
       intersectionObserver.disconnect()
       window.removeEventListener('pointermove', onPointerMove)
       scene.traverse((object) => {
-        const mesh = object as THREE_NS.Mesh
+        const mesh = object as THREE.Mesh
         mesh.geometry?.dispose()
-        const material = mesh.material as THREE_NS.Material | THREE_NS.Material[] | undefined
+        const material = mesh.material as THREE.Material | THREE.Material[] | undefined
         ;(Array.isArray(material) ? material : material ? [material] : []).forEach((m) => {
-          Object.values(m).forEach((value) => (value as THREE_NS.Texture | null)?.isTexture && (value as THREE_NS.Texture).dispose())
+          Object.values(m).forEach((value) => (value as THREE.Texture | null)?.isTexture && (value as THREE.Texture).dispose())
           m.dispose()
         })
       })

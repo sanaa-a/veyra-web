@@ -68,12 +68,6 @@
         }
       }
     },
-    "video": {
-      "eyebrow": "See it in action",
-      "title": "This is what a Veyra hologram looks like",
-      "play": "Play video",
-      "placeholder": "The video of the fan in action goes here."
-    },
     "steps": {
       "eyebrow": "Working with us",
       "title": "From idea to hologram in four steps",

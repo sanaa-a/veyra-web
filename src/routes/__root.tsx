@@ -4,6 +4,8 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { Direction } from 'radix-ui'
 import { dirOf } from '@/i18n/locales'
 import { useLocale } from '@/hooks/use-locale'
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url'
+import { ORGANIZATION } from '@/lib/seo'
 import appCss from '@/styles/app.css?url'
 
 export const Route = createRootRoute({
@@ -14,15 +16,13 @@ export const Route = createRootRoute({
       { name: 'theme-color', content: '#0b0812' },
     ],
     links: [
-      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap',
-      },
+      // The Latin text face is needed on every page, so fetch it alongside the stylesheet rather than after it.
+      { rel: 'preload', href: archivoLatin, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
     ],
+    scripts: [{ type: 'application/ld+json', children: JSON.stringify(ORGANIZATION) }],
   }),
   shellComponent: RootDocument,
 })

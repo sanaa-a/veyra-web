@@ -1,10 +1,8 @@
-import type * as THREE_NS from 'three'
+import * as THREE from 'three'
 import { V_OUTLINE } from './logo-shape'
 
-type Three = typeof THREE_NS
-
 export type Exhibit = {
-  object: THREE_NS.Object3D
+  object: THREE.Object3D
   /** Called every frame while the exhibit is on show, with the clock and the seconds since it appeared. */
   animate: (time: number, shownFor: number) => void
 }
@@ -14,7 +12,7 @@ const VIOLET = 0x836ffd
 const PURPLE = 0x9e54fd
 
 /** The Veyra mark as a solid, polished object with its orbit ring and a travelling dot. */
-function veyraMark(THREE: Three): Exhibit {
+function veyraMark(): Exhibit {
   const object = new THREE.Group()
 
   const shape = new THREE.Shape(V_OUTLINE.map(([x, y]) => new THREE.Vector2(x, y)))
@@ -77,7 +75,7 @@ function veyraMark(THREE: Three): Exhibit {
  * A DNA double helix in the style of a science-magazine render: two glossy blue backbones with a fine,
  * grainy surface, joined by slim rungs, spinning on its long axis. A fainter helix sits further back for depth.
  */
-function dnaHelix(THREE: Three): Exhibit {
+function dnaHelix(): Exhibit {
   const object = new THREE.Group()
 
   // A grainy bump texture, so the surface catches light like a real rendered model instead of smooth plastic.
@@ -169,7 +167,7 @@ function dnaHelix(THREE: Three): Exhibit {
  * A material lit by a single distant sun and nothing else, for objects in space. The planet gets soft diffuse
  * shading with a dark night side; the rings are lit evenly but fall into the planet's shadow behind it.
  */
-function sunlit(THREE: Three, map: THREE_NS.Texture, sun: THREE_NS.Vector3, kind: 'planet' | 'rings', planetRadius = 0) {
+function sunlit(map: THREE.Texture, sun: THREE.Vector3, kind: 'planet' | 'rings', planetRadius = 0) {
   return new THREE.ShaderMaterial({
     uniforms: { map: { value: map }, sun: { value: sun }, planetRadius: { value: planetRadius } },
     transparent: kind === 'rings',
@@ -217,7 +215,7 @@ const bandNoise = (x: number) => Math.sin(x * 12.9898) * 0.5 + Math.sin(x * 4.14
  * the real ones (faint C ring, bright B ring, the dark Cassini Division, the A ring with the Encke Gap),
  * tilted at Saturn's 26.7°.
  */
-function saturn(THREE: Three): Exhibit {
+function saturn(): Exhibit {
   const object = new THREE.Group()
   const RADIUS = 0.36
 
@@ -256,7 +254,7 @@ function saturn(THREE: Three): Exhibit {
   planetTexture.colorSpace = THREE.SRGBColorSpace
   // Lit only by the sun, with no studio fill, so it keeps its true colours and a real night side.
   const sunDirection = new THREE.Vector3(-1, 0.3, 0.4).normalize()
-  const planet = new THREE.Mesh(new THREE.SphereGeometry(RADIUS, 96, 64), sunlit(THREE, planetTexture, sunDirection, 'planet'))
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(RADIUS, 96, 64), sunlit(planetTexture, sunDirection, 'planet'))
 
   // Rings, from 1.24 to 2.27 planet radii. The texture runs from the inner edge (left) to the outer edge (right).
   const INNER = 1.24
@@ -298,7 +296,7 @@ function saturn(THREE: Three): Exhibit {
   }
   const rings = new THREE.Mesh(
     ringGeometry,
-    sunlit(THREE, ringTexture, sunDirection, 'rings', RADIUS),
+    sunlit(ringTexture, sunDirection, 'rings', RADIUS),
   )
   rings.rotation.x = -Math.PI / 2
 
@@ -318,6 +316,6 @@ function saturn(THREE: Three): Exhibit {
 }
 
 /** The show, in order. */
-export function createExhibits(THREE: Three): Exhibit[] {
-  return [veyraMark(THREE), dnaHelix(THREE), saturn(THREE)]
+export function createExhibits(): Exhibit[] {
+  return [veyraMark(), dnaHelix(), saturn()]
 }

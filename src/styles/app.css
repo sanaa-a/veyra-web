@@ -1,5 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "lenis/dist/lenis.css";
+/* Self-hosted fonts: Archivo (Latin) and IBM Plex Sans Arabic. Each file covers one script, so a page only downloads what it shows. */
+@import "@fontsource-variable/archivo/wght.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-400.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-500.css";
+@import "@fontsource/ibm-plex-sans-arabic/arabic-700.css";
 
 /* Veyra is dark-first: the hologram glow only reads on a deep night background. */
 @custom-variant dark (&:is(.dark *));
@@ -35,7 +41,6 @@
   --border: rgb(160 170 255 / 0.14);
   --input: rgb(160 170 255 / 0.26);
   --ring: var(--veyra-violet);
-  --whatsapp: #25d366;
   /* The logo's sweep, blue through violet to purple. */
   --veyra-gradient: linear-gradient(100deg, var(--veyra-blue), var(--veyra-violet) 50%, var(--veyra-purple));
 }
@@ -45,6 +50,12 @@
   0%, 4%, 8%, 13% { opacity: 0.15; }
   2%, 6%, 10%, 16%, 60%, 63%, 100% { opacity: 1; }
   61.5% { opacity: 0.35; }
+}
+
+@keyframes cue {
+  0% { opacity: 0; transform: translateY(-2px); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(10px); }
 }
 
 @keyframes ticker {
@@ -72,7 +83,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-whatsapp: var(--whatsapp);
   --color-veyra-blue: var(--veyra-blue);
   --color-veyra-violet: var(--veyra-violet);
   --color-veyra-purple: var(--veyra-purple);
@@ -84,10 +94,9 @@
   --radius-xl: calc(var(--radius) + 6px);
   --radius-2xl: calc(var(--radius) + 12px);
 
-  --font-display: "Archivo", system-ui, sans-serif;
-  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
-  --font-arabic: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  /* Archivo has no Arabic letters, so Arabic text in any font stack falls through to IBM Plex Sans Arabic. */
+  --font-display: "Archivo Variable", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-sans: "Archivo Variable", "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 /* Archivo at its normal width for headlines: firm and plain. */
@@ -95,16 +104,10 @@
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.025em;
-}
-
-/* Small uppercase mono captions, the voice of spec sheets and device labels. */
-@utility label-mono {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  line-height: 1.4;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--veyra-blue);
+  /* Arabic letters join, so they take no tightening. */
+  [dir="rtl"] & {
+    letter-spacing: 0;
+  }
 }
 
 /* The logo's gradient as type, for the words that carry the light. */
@@ -136,21 +139,11 @@
   }
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     overflow-x: hidden;
-  }
-  /* Arabic uses one family for everything; the Latin display face has no Arabic glyphs. */
-  [dir="rtl"] body,
-  [dir="rtl"] .font-display,
-  [dir="rtl"] .label-mono {
-    font-family: var(--font-arabic);
-    font-stretch: normal;
-    letter-spacing: 0;
-  }
-  [dir="rtl"] .label-mono {
-    font-size: 0.8125rem;
   }
   h1, h2, h3 {
     text-wrap: balance;
@@ -160,7 +153,7 @@
     opacity: 0;
     transform: translateY(28px);
     transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-    transition-delay: var(--reveal-delay, 0ms);
+    transition-delay: calc(var(--reveal-index, 0) * 90ms);
   }
   .reveal-ready [data-reveal].is-revealed {
     opacity: 1;
@@ -171,6 +164,155 @@
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * Scroll-linked motion. Where the browser supports scroll-driven animations, each effect is tied to the
+ * scroll position itself, so it runs on the compositor and plays backwards when you scroll back up.
+ * Elsewhere the class-based reveal above takes over (see use-reveal.ts) and the rest stays still.
+ *
+ * Text flies in from below as it arrives and flies off upwards as it leaves. On large screens the home
+ * page's sections are "scenes": the screen holds still while the scroll plays their words in and out.
+ */
+@keyframes fly-in {
+  from { opacity: 0; transform: translateY(90px) scale(0.94); }
+}
+@keyframes fly-out {
+  to { opacity: 0; transform: translateY(-90px) scale(0.94); }
+}
+@keyframes fly-through {
+  0% { opacity: 0; transform: translateY(110px) scale(0.92); }
+  22%, 78% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-110px) scale(0.92); }
+}
+@keyframes fade-through {
+  0%, 100% { opacity: 0; }
+  20%, 80% { opacity: 1; }
+}
+@keyframes stage-out {
+  to { opacity: 0; transform: translateY(-8%) scale(0.82); }
+}
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+}
+@keyframes word-lit {
+  from { opacity: 0.16; }
+}
+@keyframes header-settle {
+  from { background-color: transparent; border-color: transparent; backdrop-filter: none; }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Fly-out has no start keyframe, so until an element leaves it keeps whatever fly-in left it at. */
+    [data-reveal] {
+      animation: fly-in linear both, fly-out linear both;
+      animation-timeline: view(), view();
+      animation-range:
+        entry calc(var(--reveal-index, 0) * 8%) cover calc(28% + var(--reveal-index, 0) * 6%),
+        exit 0% exit 90%;
+    }
+    /* The hero show shrinks back and fades as the page scrolls over it; the scroll cue goes first. */
+    .hero {
+      view-timeline: --hero;
+    }
+    .hero-stage {
+      animation: stage-out linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 90%;
+    }
+    .hero-cue {
+      animation: fade-out linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 12%;
+    }
+    /* Words light up one after another as their line climbs the screen. */
+    .scroll-words {
+      view-timeline: --words;
+    }
+    .scroll-words .word {
+      animation: word-lit linear both;
+      animation-timeline: --words;
+      animation-range: cover calc(18% + var(--word) / var(--words) * 26%) cover calc(26% + var(--word) / var(--words) * 26%);
+    }
+    /* A rule that draws itself across as it comes into view. */
+    .draw-line::before {
+      transform-origin: left;
+      animation: grow-x linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 50%;
+    }
+    [dir="rtl"] .draw-line::before {
+      transform-origin: right;
+    }
+    /* The header is clear over the top of the page and settles into a frosted bar once you scroll. */
+    .header-settle {
+      animation: header-settle linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 120px;
+    }
+
+    /* Scenes: the section is several screens tall and its stage sticks to the screen while you scroll through it. */
+    @media (min-width: 1024px) and (min-height: 640px) {
+      .scene {
+        height: 260svh;
+        padding-block: 0;
+        border-top-width: 0;
+        view-timeline: --scene;
+      }
+      /*
+       * Back-to-back scenes overlap by one screen, so the next one takes hold the moment the last lets go
+       * and the page never visibly travels between them. The arriving stage is empty while it slides over,
+       * so stages let clicks through to whatever is showing.
+       */
+      .scene + .scene {
+        margin-top: -100svh;
+      }
+      .scene-stage {
+        pointer-events: none;
+      }
+      .scene-glow {
+        animation: fade-through linear both;
+        animation-timeline: --scene;
+        animation-range: contain 0% contain 100%;
+      }
+      .scene-stage :is(a, button, article, li) {
+        pointer-events: auto;
+      }
+      .scene-stage {
+        position: sticky;
+        top: 0;
+        display: grid;
+        align-content: center;
+        height: 100svh;
+        padding-top: 3.75rem; /* clear of the header */
+        overflow: hidden;
+      }
+      /* Each piece flies through in its turn: in from below, a still moment, then off the top. */
+      .scene [data-reveal] {
+        --scene-step: calc(var(--reveal-index, 0) + var(--reveal-shift, 0));
+        animation: fly-through linear both;
+        animation-timeline: --scene;
+        animation-range: contain calc(var(--scene-step) * 4%) contain calc(80% + var(--scene-step) * 4%);
+      }
+      /* Cards and steps follow their section heading. */
+      .scene :is(article, li)[data-reveal] {
+        --reveal-shift: 1;
+      }
+      .scene .scroll-words .word {
+        animation-timeline: --scene;
+        animation-range: contain calc(4% + var(--word) / var(--words) * 22%) contain calc(10% + var(--word) / var(--words) * 22%);
+      }
+      .scene .draw-line::before {
+        animation: grow-x linear both, fade-out linear both;
+        animation-timeline: --scene, --scene;
+        animation-range: contain 12% contain 40%, contain 82% contain 96%;
+      }
     }
   }
 }

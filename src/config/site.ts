@@ -4,7 +4,7 @@ export const SITE = {
   /** WhatsApp number in international format, digits only. Replace the placeholder before launch. */
   whatsapp: '96800000000',
   email: 'vey.ra@outlook.com',
-  instagram: 'veyra_om',
+  instagram: 'https://www.instagram.com/veyra_om',
   linkedin: 'https://www.linkedin.com/company/veyra-hologram',
 } as const
 

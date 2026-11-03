@@ -13,7 +13,7 @@ export function LanguageSwitcher() {
   const current = useLocale()
 
   return (
-    <nav dir="ltr" aria-label={t('nav.language')} className="relative grid h-9 grid-cols-2 rounded-full border p-0.5 font-mono text-xs tracking-[0.14em]">
+    <nav dir="ltr" aria-label={t('nav.language')} className="relative grid h-9 grid-cols-2 rounded-full border p-0.5 text-xs font-medium tracking-[0.14em]">
       <span
         aria-hidden
         className={cn(

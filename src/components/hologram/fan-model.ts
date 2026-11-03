@@ -1,6 +1,4 @@
-import type * as THREE_NS from 'three'
-
-type Three = typeof THREE_NS
+import * as THREE from 'three'
 
 const BLADES = 4
 const LEDS_PER_BLADE = 28
@@ -11,7 +9,7 @@ export const FAN_RADIUS = 1
  * It is what a visitor sees before the fan starts, and it fades out as the blades reach full speed,
  * the way real blades vanish once they spin fast enough.
  */
-export function createFan(THREE: Three) {
+export function createFan() {
   const group = new THREE.Group()
   const rotor = new THREE.Group()
   group.add(rotor)

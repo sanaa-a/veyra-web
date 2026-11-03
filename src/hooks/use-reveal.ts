@@ -1,14 +1,16 @@
 import { useEffect } from 'react'
+import { prefersReducedMotion } from '@/lib/utils'
 
 /**
- * Fades elements marked `data-reveal` up into place as they scroll into view, including ones a page
+ * Fallback for browsers without scroll-driven animations (app.css handles the rest in CSS alone):
+ * fades elements marked `data-reveal` up into place as they scroll into view, including ones a page
  * navigation adds later (the new page renders after the route changes, so we watch the DOM for them).
  * The hidden starting state only applies once this has run (see `.reveal-ready` in app.css), so without
  * JavaScript, or with reduced motion, everything is simply visible.
  */
 export function useReveal() {
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (CSS.supports('animation-timeline: view()') || prefersReducedMotion()) return
     const root = document.documentElement
     root.classList.add('reveal-ready')
     const observer = new IntersectionObserver(

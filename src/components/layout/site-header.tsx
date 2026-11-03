@@ -19,7 +19,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-[env(safe-area-inset-top)] z-40 border-b bg-background/85 backdrop-blur-md">
+    <header className="header-settle sticky top-[env(safe-area-inset-top)] z-40 border-b bg-background/85 backdrop-blur-md">
       <Container className="flex items-center gap-3 py-3 md:gap-5">
         <PageLink page={SITE_PAGES[0]} aria-label="Veyra">
           <Logo />

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { hasFinePointer, prefersReducedMotion } from '@/lib/utils'
 
 /**
  * A soft purple light that follows the pointer across the page.
@@ -10,8 +11,7 @@ export function PointerGlow() {
   useEffect(() => {
     const glow = glowRef.current
     if (!glow) return
-    if (!window.matchMedia('(pointer: fine)').matches) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!hasFinePointer() || prefersReducedMotion()) return
 
     let frame = 0
     const onMove = (event: PointerEvent) => {
