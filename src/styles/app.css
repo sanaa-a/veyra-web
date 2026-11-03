@@ -172,9 +172,24 @@
  * Scroll-linked motion. Where the browser supports scroll-driven animations, each effect is tied to the
  * scroll position itself, so it runs on the compositor and plays backwards when you scroll back up.
  * Elsewhere the class-based reveal above takes over (see use-reveal.ts) and the rest stays still.
+ *
+ * Text flies in from below as it arrives and flies off upwards as it leaves. On large screens the home
+ * page's sections are "scenes": the screen holds still while the scroll plays their words in and out.
  */
-@keyframes reveal-in {
-  from { opacity: 0; transform: translateY(56px) scale(0.97); }
+@keyframes fly-in {
+  from { opacity: 0; transform: translateY(90px) scale(0.94); }
+}
+@keyframes fly-out {
+  to { opacity: 0; transform: translateY(-90px) scale(0.94); }
+}
+@keyframes fly-through {
+  0% { opacity: 0; transform: translateY(110px) scale(0.92); }
+  22%, 78% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-110px) scale(0.92); }
+}
+@keyframes fade-through {
+  0%, 100% { opacity: 0; }
+  20%, 80% { opacity: 1; }
 }
 @keyframes stage-out {
   to { opacity: 0; transform: translateY(-8%) scale(0.82); }
@@ -194,10 +209,13 @@
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
+    /* Fly-out has no start keyframe, so until an element leaves it keeps whatever fly-in left it at. */
     [data-reveal] {
-      animation: reveal-in linear both;
-      animation-timeline: view();
-      animation-range: entry calc(var(--reveal-index, 0) * 7%) cover calc(30% + var(--reveal-index, 0) * 7%);
+      animation: fly-in linear both, fly-out linear both;
+      animation-timeline: view(), view();
+      animation-range:
+        entry calc(var(--reveal-index, 0) * 8%) cover calc(28% + var(--reveal-index, 0) * 6%),
+        exit 0% exit 90%;
     }
     /* The hero show shrinks back and fades as the page scrolls over it; the scroll cue goes first. */
     .hero {
@@ -232,20 +250,69 @@
     [dir="rtl"] .draw-line::before {
       transform-origin: right;
     }
-    .scroll-progress {
-      transform-origin: left;
-      animation: grow-x linear both;
-      animation-timeline: scroll(root);
-    }
-    [dir="rtl"] .scroll-progress {
-      transform-origin: right;
-    }
     /* The header is clear over the top of the page and settles into a frosted bar once you scroll. */
     .header-settle {
       animation: header-settle linear both;
       animation-timeline: scroll(root);
       animation-range: 0 120px;
     }
+
+    /* Scenes: the section is several screens tall and its stage sticks to the screen while you scroll through it. */
+    @media (min-width: 1024px) and (min-height: 640px) {
+      .scene {
+        height: 260svh;
+        padding-block: 0;
+        border-top-width: 0;
+        view-timeline: --scene;
+      }
+      /*
+       * Back-to-back scenes overlap by one screen, so the next one takes hold the moment the last lets go
+       * and the page never visibly travels between them. The arriving stage is empty while it slides over,
+       * so stages let clicks through to whatever is showing.
+       */
+      .scene + .scene {
+        margin-top: -100svh;
+      }
+      .scene-stage {
+        pointer-events: none;
+      }
+      .scene-glow {
+        animation: fade-through linear both;
+        animation-timeline: --scene;
+        animation-range: contain 0% contain 100%;
+      }
+      .scene-stage :is(a, button, article, li) {
+        pointer-events: auto;
+      }
+      .scene-stage {
+        position: sticky;
+        top: 0;
+        display: grid;
+        align-content: center;
+        height: 100svh;
+        padding-top: 3.75rem; /* clear of the header */
+        overflow: hidden;
+      }
+      /* Each piece flies through in its turn: in from below, a still moment, then off the top. */
+      .scene [data-reveal] {
+        --scene-step: calc(var(--reveal-index, 0) + var(--reveal-shift, 0));
+        animation: fly-through linear both;
+        animation-timeline: --scene;
+        animation-range: contain calc(var(--scene-step) * 4%) contain calc(80% + var(--scene-step) * 4%);
+      }
+      /* Cards and steps follow their section heading. */
+      .scene :is(article, li)[data-reveal] {
+        --reveal-shift: 1;
+      }
+      .scene .scroll-words .word {
+        animation-timeline: --scene;
+        animation-range: contain calc(4% + var(--word) / var(--words) * 22%) contain calc(10% + var(--word) / var(--words) * 22%);
+      }
+      .scene .draw-line::before {
+        animation: grow-x linear both, fade-out linear both;
+        animation-timeline: --scene, --scene;
+        animation-range: contain 12% contain 40%, contain 82% contain 96%;
+      }
+    }
   }
 }
-

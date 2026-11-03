@@ -4,11 +4,27 @@ import { cn } from '@/lib/utils'
 
 const GLOWS = { blue: 'glow-blue', violet: 'glow-violet', purple: 'glow-purple' } as const
 
+type SectionProps = ComponentProps<'section'> & {
+  glow?: keyof typeof GLOWS
+  /** Pin the section on large screens while its content flies in and out with the scroll (see `.scene` in app.css). */
+  scene?: boolean
+}
+
 /** A full-width band of the page, opened by a hairline rule, optionally lit from one side in a brand colour. */
-export function Section({ className, children, glow, ...props }: ComponentProps<'section'> & { glow?: keyof typeof GLOWS }) {
+export function Section({ className, children, glow, scene = false, ...props }: SectionProps) {
+  const lit = glow && GLOWS[glow]
+  const content = <Container>{children}</Container>
   return (
-    <section className={cn('border-t py-16 sm:py-24 lg:py-28', glow && GLOWS[glow], className)} {...props}>
-      <Container>{children}</Container>
+    <section className={cn('border-t py-16 sm:py-24 lg:py-28', scene ? 'scene' : lit, className)} {...props}>
+      {scene ? (
+        <div className="scene-stage relative isolate">
+          {/* A scene's light belongs to its stage: it holds still with the words and fades with them. */}
+          <div aria-hidden className={cn('scene-glow absolute inset-0 -z-10', lit)} />
+          {content}
+        </div>
+      ) : (
+        content
+      )}
     </section>
   )
 }
