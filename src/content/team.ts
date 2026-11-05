@@ -2,7 +2,7 @@ import type en from '@/i18n/locales/en.json'
 
 export type Member = {
   id: keyof typeof en.about.members
-  /** Path under /public, e.g. '/team/fatma.webp' (background removed, 4:5, 800x1000). Leave out to show initials. */
+  /** Path under /public, e.g. '/team/fatma.webp' (background removed, 4:5, 800x1000, plus a 480x600 copy named '<id>-480.webp'). Leave out to show initials. */
   photo?: string
 }
 

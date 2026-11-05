@@ -17,7 +17,17 @@ export function MemberCard({ member, compact = false, index = 0 }: { member: Mem
         className={cn('relative grid aspect-[4/5] place-items-center overflow-hidden rounded-xl border bg-card transition-[transform,box-shadow,border-color] duration-500 ease-out group-hover:scale-[1.03] group-hover:border-veyra-violet/50 group-hover:shadow-[0_24px_60px_-24px_var(--veyra-purple)] bg-[radial-gradient(80%_70%_at_30%_10%,rgb(92_116_228/0.28),transparent_70%),radial-gradient(70%_60%_at_90%_100%,rgb(158_84_253/0.25),transparent_70%)]', !compact && 'max-w-full', member.photo && 'scan')}
       >
         {member.photo ? (
-          <img src={member.photo} alt={name} width={800} height={1000} className="absolute inset-0 size-full origin-bottom object-cover transition-transform duration-500 ease-out group-hover:scale-105" loading="lazy" />
+          <img
+            src={member.photo}
+            srcSet={`${member.photo.replace('.webp', '-480.webp')} 480w, ${member.photo} 800w`}
+            sizes={compact ? '8rem' : '(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 90vw'}
+            alt={name}
+            width={800}
+            height={1000}
+            decoding="async"
+            className="absolute inset-0 size-full origin-bottom object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            loading="lazy"
+          />
         ) : (
           <>
             <span className={cn('font-display text-gradient', compact ? 'text-3xl' : 'text-6xl')} aria-hidden>

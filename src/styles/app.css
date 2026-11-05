@@ -332,7 +332,7 @@
   clip-path: inset(0 0 100% 0);
 }
 .scan.is-scanned img {
-  animation: scan-reveal 1.4s cubic-bezier(0.55, 0, 0.35, 1) both;
+  animation: scan-reveal 1s cubic-bezier(0.55, 0, 0.35, 1) both;
 }
 .scan.is-scanned::after {
   content: "";
@@ -344,6 +344,6 @@
     linear-gradient(var(--veyra-purple), var(--veyra-purple)) top / 100% 2px no-repeat,
     linear-gradient(rgb(158 84 253 / 0.45), transparent) top / 100% 36px no-repeat;
   filter: drop-shadow(0 0 6px var(--veyra-purple));
-  animation: scan-line 1.4s cubic-bezier(0.55, 0, 0.35, 1) both;
+  animation: scan-line 1s cubic-bezier(0.55, 0, 0.35, 1) both;
 }
 
