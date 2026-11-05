@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { Container } from '@/components/common/container'
-import { cn } from '@/lib/utils'
+import { SplitWords } from '@/components/sections/split-words'
+import { cn, revealOrder } from '@/lib/utils'
 
 const GLOWS = { blue: 'glow-blue', violet: 'glow-violet', purple: 'glow-purple' } as const
 
@@ -30,19 +31,32 @@ export function Section({ className, children, glow, scene = false, ...props }: 
 }
 
 type SectionHeadingProps = {
-  title: ReactNode
+  title: string
   lead?: ReactNode
   /** The page's main heading uses h1; every other section uses h2. */
   as?: 'h1' | 'h2'
   className?: string
 }
 
-/** A section's heading and optional lead paragraph. */
+/**
+ * A section's heading and optional lead paragraph, each sliding in on its own.
+ * A page's h1 also rises in word by word as the page opens.
+ */
 export function SectionHeading({ title, lead, as: Heading = 'h2', className }: SectionHeadingProps) {
   return (
-    <div data-reveal className={cn('mb-12 grid max-w-3xl gap-5 lg:mb-16', className)}>
-      <Heading className={cn('font-display leading-[1.05]', Heading === 'h1' ? 'text-4xl sm:text-6xl' : 'text-3xl sm:text-5xl')}>{title}</Heading>
-      {lead && <p className="max-w-[60ch] text-lg text-muted-foreground">{lead}</p>}
+    <div className={cn('mb-12 grid max-w-3xl gap-5 lg:mb-16', className)}>
+      {Heading === 'h1' ? (
+        <SplitWords as="h1" effect="rise" parts={[{ text: title }]} data-reveal className="font-display text-4xl leading-[1.05] sm:text-6xl" />
+      ) : (
+        <h2 data-reveal className="font-display text-3xl leading-[1.05] sm:text-5xl">
+          {title}
+        </h2>
+      )}
+      {lead && (
+        <p data-reveal style={revealOrder(1)} className="max-w-[60ch] text-lg text-muted-foreground">
+          {lead}
+        </p>
+      )}
     </div>
   )
 }

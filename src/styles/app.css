@@ -248,19 +248,41 @@
 @keyframes word-lit {
   from { opacity: 0.16; }
 }
+/* A page opening: its text slides up into place, piece after piece, and the title's words rise one by one. */
+@keyframes page-in {
+  from { opacity: 0; translate: 0 56px; }
+}
+@keyframes word-rise {
+  from { opacity: 0; translate: 0 0.55em; }
+}
 @keyframes header-settle {
   from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise-words .word {
+    display: inline-block;
+    animation: word-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) calc(120ms + var(--word) * 70ms) backwards;
+  }
 }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     /* Fly-out has no start keyframe, so until an element leaves it keeps whatever fly-in left it at. */
+    /*
+     * The third animation is the page opening. It runs on the clock rather than the scroll, so text that is
+     * already on screen when a page loads still slides in; listed last, it wins while it plays.
+     */
     [data-reveal] {
-      animation: fly-in linear both, fly-out linear both;
-      animation-timeline: view(), view();
+      animation:
+        fly-in linear both,
+        fly-out linear both,
+        page-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) calc(80ms + var(--reveal-index, 0) * 120ms) backwards;
+      animation-timeline: view(), view(), auto;
       animation-range:
         entry calc(var(--reveal-index, 0) * 8%) cover calc(28% + var(--reveal-index, 0) * 6%),
-        exit 0% exit 90%;
+        exit 0% exit 90%,
+        normal;
     }
     /* The hero show shrinks back and fades as the page scrolls over it; the scroll cue goes first. */
     .hero {

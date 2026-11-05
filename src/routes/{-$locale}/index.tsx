@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ContactButton } from '@/components/common/contact-button'
 import { HologramFan } from '@/components/hologram/hologram-fan'
 import { FeatureRow } from '@/components/sections/feature-row'
-import { ScrollWords } from '@/components/sections/scroll-words'
+import { SplitWords } from '@/components/sections/split-words'
 import { UsesTicker } from '@/components/sections/uses-ticker'
 import { Section, SectionHeading } from '@/components/sections/section'
 import { HOW_IT_WORKS, STEPS } from '@/content/home'
@@ -32,13 +32,13 @@ function HomePage() {
       {/* Each of these sections holds the screen still on large screens while its words fly in and back out. */}
       <Section scene glow="violet" className="border-t-0">
         <div className="grid justify-items-center gap-8 text-center">
-          <ScrollWords
+          <SplitWords
             as="h1"
             data-reveal
             parts={[{ text: t('home.titleStart') }, { text: t('home.titleAccent'), className: 'text-veyra-blue' }]}
             className="font-display text-5xl leading-[1.02] sm:text-7xl lg:text-8xl"
           />
-          <ScrollWords data-reveal style={revealOrder(1)} parts={[{ text: t('home.lead') }]} className="max-w-2xl text-lg text-muted-foreground sm:text-xl" />
+          <SplitWords data-reveal style={revealOrder(1)} parts={[{ text: t('home.lead') }]} className="max-w-2xl text-lg text-muted-foreground sm:text-xl" />
           <ul data-reveal style={revealOrder(2)} className="flex flex-wrap justify-center gap-x-8 gap-y-3">
             {t('home.facts', { returnObjects: true }).map((fact) => (
               <li key={fact} className="flex items-center gap-2.5">
