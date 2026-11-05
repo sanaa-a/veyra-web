@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * Plays the portrait scan (see `.scan` in app.css) the first time the element is well into view,
- * once its photo has loaded, so the line never sweeps over an empty frame.
+ * Plays the portrait scan (see `.scan` in app.css) every time the element comes well into view, scrolling
+ * down or back up, once its photo has loaded, so the line never sweeps over an empty frame.
+ * When the element leaves the screen completely, it is reset, ready to scan again.
  * The photo is only hidden once this hook has run, so without JavaScript it simply shows.
  */
 export function useScan<T extends HTMLElement>() {
@@ -12,19 +13,31 @@ export function useScan<T extends HTMLElement>() {
     const element = ref.current
     if (!element) return
     element.classList.add('scan-ready')
-    const observer = new IntersectionObserver(
+    const photo = element.querySelector('img')
+    let visible = false
+
+    // Wait until the card is well up the screen, so its fly-in has finished and the sweep is seen in full.
+    const play = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return
-        observer.disconnect()
-        const photo = element.querySelector('img')
+        if (!entry.isIntersecting || visible) return
+        visible = true
         const loaded = photo ? photo.decode().catch(() => undefined) : Promise.resolve()
-        loaded.then(() => element.classList.add('is-scanned'))
+        loaded.then(() => visible && element.classList.add('is-scanned'))
       },
-      // Wait until the card is well up the screen, so its fly-in has finished and the sweep is seen in full.
       { rootMargin: '0px 0px -40% 0px' },
     )
-    observer.observe(element)
-    return () => observer.disconnect()
+    // Fully off screen: hide the photo again so the next visit scans it in afresh.
+    const reset = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) return
+      visible = false
+      element.classList.remove('is-scanned')
+    })
+    play.observe(element)
+    reset.observe(element)
+    return () => {
+      play.disconnect()
+      reset.disconnect()
+    }
   }, [])
 
   return ref
