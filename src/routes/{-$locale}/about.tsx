@@ -49,9 +49,9 @@ function AboutPage() {
 
       <Section glow="blue">
         <SectionHeading title={t('about.team.title')} lead={t('about.team.lead')} />
-        <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4">
           {TEAM.map((member, index) => (
-            <MemberCard key={member.id} member={member} index={index % 3} />
+            <MemberCard key={member.id} member={member} index={index % 4} />
           ))}
         </div>
         <h3 className="mt-20 mb-6 border-t pt-8 text-2xl font-semibold">{t('about.team.advisors')}</h3>

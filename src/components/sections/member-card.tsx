@@ -22,7 +22,7 @@ export function MemberCard({ member, compact = false, index = 0 }: { member: Mem
           <img
             src={member.photo}
             srcSet={photoSrcSet(member)}
-            sizes={compact ? '8rem' : '(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 90vw'}
+            sizes={compact ? '8rem' : '(min-width: 1024px) 17rem, 45vw'}
             alt={name}
             width={800}
             height={1000}

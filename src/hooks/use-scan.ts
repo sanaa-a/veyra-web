@@ -16,15 +16,15 @@ export function useScan<T extends HTMLElement>() {
     const photo = element.querySelector('img')
     let visible = false
 
-    // Wait until the card is well up the screen, so its fly-in has finished and the sweep is seen in full.
+    // Wait until most of the frame is on screen, so its fly-in is nearly done and the sweep is seen in full.
     const play = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting || visible) return
+        if (entry.intersectionRatio < 0.6 || visible) return
         visible = true
         const loaded = photo ? photo.decode().catch(() => undefined) : Promise.resolve()
         loaded.then(() => visible && element.classList.add('is-scanned'))
       },
-      { rootMargin: '0px 0px -40% 0px' },
+      { threshold: 0.6 },
     )
     // Fully off screen: hide the photo again so the next visit scans it in afresh.
     const reset = new IntersectionObserver(([entry]) => {
