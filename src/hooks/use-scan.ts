@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 /**
- * Plays the portrait scan (see `.scan` in app.css) the first time the element comes into view,
+ * Plays the portrait scan (see `.scan` in app.css) the first time the element is well into view,
  * once its photo has loaded, so the line never sweeps over an empty frame.
  * The photo is only hidden once this hook has run, so without JavaScript it simply shows.
  */
@@ -20,7 +20,8 @@ export function useScan<T extends HTMLElement>() {
         const loaded = photo ? photo.decode().catch(() => undefined) : Promise.resolve()
         loaded.then(() => element.classList.add('is-scanned'))
       },
-      { rootMargin: '0px 0px -5% 0px' },
+      // Wait until the card is well up the screen, so its fly-in has finished and the sweep is seen in full.
+      { rootMargin: '0px 0px -40% 0px' },
     )
     observer.observe(element)
     return () => observer.disconnect()
