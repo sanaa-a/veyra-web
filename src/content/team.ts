@@ -15,4 +15,4 @@ export const TEAM: Member[] = [
   { id: 'abdulaziz', photo: '/team/abdulaziz.webp' },
 ]
 
-export const ADVISORS: Member[] = [{ id: 'hussain' }, { id: 'mohammed' }]
+export const ADVISORS: Member[] = [{ id: 'hussain', photo: '/team/hussain.webp' }, { id: 'mohammed' }]
