@@ -2,12 +2,12 @@ import type en from '@/i18n/locales/en.json'
 
 export type Member = {
   id: keyof typeof en.about.members
-  /** Path under /public, e.g. '/team/fatma.jpg'. Leave out to show initials. */
+  /** Path under /public, e.g. '/team/fatma.webp' (background removed, 4:5, 800x1000). Leave out to show initials. */
   photo?: string
 }
 
 export const TEAM: Member[] = [
-  { id: 'fatma' },
+  { id: 'fatma', photo: '/team/fatma.webp' },
   { id: 'anaum' },
   { id: 'anas' },
   { id: 'ibtisam' },
