@@ -1,8 +1,8 @@
 export const SITE = {
   name: 'Veyra',
   url: 'https://veyraom.app',
-  /** WhatsApp number in international format, digits only. Replace the placeholder before launch. */
-  whatsapp: '96800000000',
+  /** WhatsApp number in international format, digits only. */
+  whatsapp: '96892453593',
   email: 'vey.ra@outlook.com',
   instagram: 'https://www.instagram.com/veyra_om',
   linkedin: 'https://www.linkedin.com/company/veyra-hologram',

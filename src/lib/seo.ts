@@ -14,6 +14,7 @@ export const ORGANIZATION = {
   url: SITE.url,
   logo: `${SITE.url}/logo.png`,
   email: SITE.email,
+  telephone: `+${SITE.whatsapp}`,
   sameAs: [SITE.instagram, SITE.linkedin],
   address: { '@type': 'PostalAddress', addressLocality: 'Muscat', addressCountry: 'OM' },
   areaServed: 'OM',
