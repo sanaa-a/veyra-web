@@ -8,7 +8,7 @@ export type Member = {
 
 export const TEAM: Member[] = [
   { id: 'fatma', photo: '/team/fatma.webp' },
-  { id: 'anaum' },
+  { id: 'anaum', photo: '/team/anaum.webp' },
   { id: 'anas' },
   { id: 'ibtisam' },
   { id: 'ahmed' },
