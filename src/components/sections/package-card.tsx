@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { ContactButton } from '@/components/common/contact-button'
+import { Card } from '@/components/ui/card'
 import type { PackageId } from '@/content/packages'
 import { cn, revealOrder } from '@/lib/utils'
 
@@ -11,15 +12,15 @@ export function PackageCard({ id, featured = false, index = 0 }: { id: PackageId
   const features = t(`packages.items.${id}.features`, { returnObjects: true })
 
   return (
-    <article data-reveal style={revealOrder(index)} className={cn('flex min-w-0 flex-col gap-8 rounded-2xl border p-7 transition-transform duration-300 hover:-translate-y-1 sm:p-8', featured ? 'border-transparent bg-[linear-gradient(150deg,#5c74e4,#836ffd_55%,#9e54fd)] text-white shadow-[0_30px_80px_-30px_var(--veyra-violet)]' : 'bg-card')}>
+    <Card as="article" surface={featured ? 'lit' : 'solid'} lift data-reveal style={revealOrder(index)} className="flex flex-col gap-8 rounded-2xl p-7 sm:p-8">
       <div className="grid gap-3">
         {featured && <Badge className="border-white/40 text-white">{t('common.popular')}</Badge>}
         <h2 className="font-display text-3xl">{name}</h2>
         <span className={cn('text-sm text-muted-foreground', featured && 'text-white/80')}>{t(`packages.items.${id}.duration`)}</span>
       </div>
-      <ul className={cn('grid flex-1 content-start border-t', featured ? 'border-white/20' : 'border-border')}>
+      <ul className={cn('grid flex-1 content-start border-t', featured && 'border-white/20 [&>li]:border-white/20')}>
         {features.map((feature) => (
-          <li key={feature} className={cn('border-b py-3', featured ? 'border-white/20' : 'border-border')}>
+          <li key={feature} className="border-b py-3">
             {feature}
           </li>
         ))}
@@ -29,6 +30,6 @@ export function PackageCard({ id, featured = false, index = 0 }: { id: PackageId
         message={t('common.waPackage', { name })}
         className="w-full"
       />
-    </article>
+    </Card>
   )
 }

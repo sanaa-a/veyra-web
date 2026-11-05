@@ -39,7 +39,7 @@ export function PointerGlow() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
       <div
         ref={glowRef}
-        className="absolute -top-[5rem] -left-[5rem] size-[10rem] rounded-full opacity-0 mix-blend-screen transition-opacity duration-500"
+        className="absolute -top-[5rem] -left-[5rem] size-[10rem] rounded-full opacity-0 transition-opacity duration-500"
         style={{ background: 'radial-gradient(circle, rgb(158 84 253 / 0.32) 0%, rgb(131 111 253 / 0.14) 35%, transparent 70%)' }}
       />
     </div>

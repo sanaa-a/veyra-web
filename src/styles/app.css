@@ -132,6 +132,40 @@
 @utility bg-veyra {
   background-image: var(--veyra-gradient);
 }
+/* The brand gradient as a full panel, deeper so white type reads on it. */
+@utility bg-veyra-lit {
+  background-image: linear-gradient(150deg, var(--veyra-deep), var(--veyra-violet) 55%, var(--veyra-purple));
+}
+/* The same colours as a faint wash. */
+@utility bg-veyra-tint {
+  background-image: linear-gradient(120deg, rgb(92 116 228 / 0.16), rgb(158 84 253 / 0.12));
+}
+/* Blue light from the top corner and purple from the bottom, behind a portrait. */
+@utility bg-portrait {
+  background-image:
+    radial-gradient(80% 70% at 30% 10%, rgb(92 116 228 / 0.28), transparent 70%),
+    radial-gradient(70% 60% at 90% 100%, rgb(158 84 253 / 0.25), transparent 70%);
+}
+
+/* Night blue into deep purple, for the closing call to action. */
+@utility bg-veyra-night {
+  background-image: linear-gradient(125deg, #1b1c4f, #33388f 45%, #4e2f8f);
+}
+
+/*
+ * The header's frosted bar sits on a layer of its own, so settling in on scroll only fades that layer
+ * instead of re-blurring the page under it on every frame.
+ */
+.header-settle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-bottom: 1px solid var(--border);
+  background-color: rgb(11 8 18 / 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
 
 /* Soft coloured light falling into a section from one side, like the spill from a running fan. */
 @utility glow-blue {
@@ -215,7 +249,7 @@
   from { opacity: 0.16; }
 }
 @keyframes header-settle {
-  from { background-color: transparent; border-color: transparent; backdrop-filter: none; }
+  from { opacity: 0; }
 }
 
 @supports (animation-timeline: view()) {
@@ -262,7 +296,7 @@
       transform-origin: right;
     }
     /* The header is clear over the top of the page and settles into a frosted bar once you scroll. */
-    .header-settle {
+    .header-settle::before {
       animation: header-settle linear both;
       animation-timeline: scroll(root);
       animation-range: 0 120px;

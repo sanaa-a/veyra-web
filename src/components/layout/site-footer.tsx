@@ -9,6 +9,7 @@ import { SITE, whatsappUrl } from '@/config/site'
 import { SERVICES } from '@/content/services'
 import { cn } from '@/lib/utils'
 import { SITE_PAGES } from '@/config/pages'
+import { Card } from '@/components/ui/card'
 import { ContactButton } from '@/components/common/contact-button'
 
 const SOCIALS = [
@@ -100,9 +101,10 @@ export function CtaBand() {
   return (
     <section className="py-16 sm:py-24">
       <Container>
-        <div
+        <Card
+          surface="night"
           data-reveal
-          className="relative isolate grid gap-8 overflow-hidden rounded-2xl border border-veyra-violet/30 bg-[linear-gradient(125deg,#1b1c4f,#33388f_45%,#4e2f8f)] p-8 sm:p-12 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:items-end lg:p-16"
+          className="relative isolate grid gap-8 overflow-hidden rounded-2xl p-8 sm:p-12 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:items-end lg:p-16"
         >
           <div aria-hidden className="absolute -end-24 -top-24 -z-10 size-80 rounded-full bg-veyra-purple/30 blur-3xl" />
           <h2 className="font-display text-3xl leading-[1.05] sm:text-5xl">{t('cta.title')}</h2>
@@ -110,7 +112,7 @@ export function CtaBand() {
             <p className="text-white/80">{t('cta.body')}</p>
             <ContactButton size="lg" className="justify-self-start" />
           </div>
-        </div>
+        </Card>
       </Container>
     </section>
   )

@@ -17,7 +17,7 @@ export function useSmoothScroll() {
     if (!hasFinePointer() || prefersReducedMotion()) return
     let cancelled = false
     import('lenis').then(({ default: Lenis }) => {
-      if (!cancelled) lenis = new Lenis({ autoRaf: true, anchors: true })
+      if (!cancelled) lenis = new Lenis({ autoRaf: true, anchors: true, lerp: 0.075, wheelMultiplier: 0.9 })
     })
     return () => {
       cancelled = true

@@ -28,7 +28,8 @@ function ServicesPage() {
         title={t(`services.items.${featured}.title`)}
         body={t(`services.items.${featured}.body`)}
         index={1}
-        className="mt-5 border-veyra-violet/40 bg-[linear-gradient(120deg,rgb(92_116_228/0.16),rgb(158_84_253/0.12))] md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-8 [&>p]:md:max-w-[60ch]"
+        surface="tint"
+        className="mt-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-8 [&>p]:md:max-w-[60ch]"
       >
         <ContactButton className="justify-self-start" />
       </FeatureRow>

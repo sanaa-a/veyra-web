@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { MemberCard } from '@/components/sections/member-card'
 import { Section, SectionHeading } from '@/components/sections/section'
 import { ADVISORS, TEAM } from '@/content/team'
@@ -37,10 +38,10 @@ function AboutPage() {
           </div>
           <div className="grid min-w-0 gap-8">
             {STATEMENTS.map((key) => (
-              <div key={key} className="grid gap-3 rounded-xl border bg-card/60 p-6">
+              <Card key={key} className="grid gap-3 p-6">
                 <h3 className="font-semibold text-veyra-blue">{t(`about.${key}.title`)}</h3>
                 <p className="text-lg">{t(`about.${key}.body`)}</p>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
