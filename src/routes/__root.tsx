@@ -22,7 +22,11 @@ export const Route = createRootRoute({
       { rel: 'icon', type: 'image/png', href: '/favicon.png' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
     ],
-    scripts: [{ type: 'application/ld+json', children: JSON.stringify(ORGANIZATION) }],
+    scripts: [
+      // Stop the browser jumping back to the old scroll position on reload, so the hero show is always seen first.
+      { children: "history.scrollRestoration='manual'" },
+      { type: 'application/ld+json', children: JSON.stringify(ORGANIZATION) },
+    ],
   }),
   shellComponent: RootDocument,
 })

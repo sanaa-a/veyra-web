@@ -4,7 +4,8 @@ import { routeTree } from './routeTree.gen'
 export function getRouter() {
   return createRouter({
     routeTree,
-    scrollRestoration: true,
+    // Every page load and every new page starts at the top (see the head script in __root.tsx).
+    scrollRestoration: false,
     defaultPreload: 'intent',
   })
 }
