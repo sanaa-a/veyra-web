@@ -11,7 +11,7 @@ export const TEAM: Member[] = [
   { id: 'anaum', photo: '/team/anaum.webp' },
   { id: 'anas' },
   { id: 'ibtisam', photo: '/team/ibtisam.webp' },
-  { id: 'ahmed' },
+  { id: 'ahmed', photo: '/team/ahmed.webp' },
   { id: 'abdulaziz', photo: '/team/abdulaziz.webp' },
 ]
 
