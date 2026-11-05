@@ -362,8 +362,9 @@
   }
 }
 
+/* Hidden with opacity, not clip-path: a fully clipped image never counts as on screen, so a lazy photo would never load. */
 .scan-ready:not(.is-scanned) img {
-  clip-path: inset(0 0 100% 0);
+  opacity: 0;
 }
 .scan.is-scanned img {
   animation: scan-reveal 1s cubic-bezier(0.55, 0, 0.35, 1) both;
