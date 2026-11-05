@@ -20,8 +20,8 @@ export function UsesTicker() {
   )
 
   return (
-    <section aria-label={t('home.usesLabel')} className="group overflow-hidden border-y bg-card/40 py-5 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
-      <div className="flex w-max animate-[ticker_40s_linear_infinite] group-hover:[animation-play-state:paused] motion-reduce:animate-none rtl:[animation-direction:reverse]">
+    <section aria-label={t('home.usesLabel')} className="overflow-hidden border-y bg-card/40 py-5 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
+      <div className="flex w-max animate-[ticker_40s_linear_infinite] motion-reduce:animate-none rtl:[animation-direction:reverse]">
         {row(false)}
         {row(true)}
       </div>
