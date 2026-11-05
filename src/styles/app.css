@@ -58,6 +58,17 @@
   100% { opacity: 0; transform: translateY(10px); }
 }
 
+/* Portrait scan (see use-scan.ts): the photo is uncovered from the top down, just behind a glowing purple line. */
+@keyframes scan-reveal {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes scan-line {
+  0% { opacity: 0; transform: translateY(0); }
+  8%, 88% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(100%); }
+}
+
 @keyframes ticker {
   to {
     transform: translateX(-50%);
@@ -316,3 +327,23 @@
     }
   }
 }
+
+.scan-ready:not(.is-scanned) img {
+  clip-path: inset(0 0 100% 0);
+}
+.scan.is-scanned img {
+  animation: scan-reveal 1.4s cubic-bezier(0.55, 0, 0.35, 1) both;
+}
+.scan.is-scanned::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* A thin bright line with a soft violet glow, riding the top edge of this layer as it slides down. */
+  background:
+    linear-gradient(var(--veyra-purple), var(--veyra-purple)) top / 100% 2px no-repeat,
+    linear-gradient(rgb(158 84 253 / 0.45), transparent) top / 100% 36px no-repeat;
+  filter: drop-shadow(0 0 6px var(--veyra-purple));
+  animation: scan-line 1.4s cubic-bezier(0.55, 0, 0.35, 1) both;
+}
+
