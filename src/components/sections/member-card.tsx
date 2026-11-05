@@ -21,7 +21,7 @@ export function MemberCard({ member, compact = false, index = 0 }: { member: Mem
         {member.photo ? (
           <img
             src={member.photo}
-            srcSet={`${member.photo.replace('.webp', '-480.webp')} 480w, ${member.photo} 800w`}
+            srcSet={photoSrcSet(member)}
             sizes={compact ? '8rem' : '(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 90vw'}
             alt={name}
             width={800}
@@ -46,4 +46,10 @@ export function MemberCard({ member, compact = false, index = 0 }: { member: Mem
       </div>
     </article>
   )
+}
+
+/** The photo at each width it is saved in: 480 and 800 for everyone, 1200 where a sharper copy exists. */
+function photoSrcSet({ photo = '', hd }: Member) {
+  const sized = (width: number) => `${photo.replace('.webp', `-${width}.webp`)} ${width}w`
+  return [sized(480), `${photo} 800w`, hd && sized(1200)].filter(Boolean).join(', ')
 }
