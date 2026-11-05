@@ -11,7 +11,7 @@ const TIMELINE = {
   ledTest: [0.7, 1.05],
   spinStart: 1.4,
   spinUp: 2.4,
-  exhibitSeconds: 6,
+  exhibitSeconds: 2,
   switchFlicker: 0.4,
   callToAction: 4.5,
   windDown: 2.6,
